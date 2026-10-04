@@ -1,0 +1,1255 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aerozip Industries | B2B Premium Luggage</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        gold: { 400: '#eab308', 500: '#d97706', 600: '#b45309' }, 
+                        luxury: { 50: '#f8fafc', 100: '#f1f5f9', 800: '#1e293b', 900: '#0f172a', 950: '#020617' }
+                    },
+                    fontFamily: { sans: ['Outfit', 'sans-serif'], display: ['Space Grotesk', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { background-color: #f8fafc; color: #0f172a; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #d97706; border-radius: 10px; }
+        
+        .glass-nav { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(0,0,0,0.05); }
+        .custom-luxury-bg { background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%); position: relative; }
+        .custom-luxury-bg::before { content: ''; position: absolute; inset: 0; background-image: radial-gradient(#d97706 0.5px, transparent 0.5px), radial-gradient(#d97706 0.5px, transparent 0.5px); background-size: 40px 40px; opacity: 0.05; pointer-events: none; }
+        
+        .product-card { background: #ffffff; border: 1px solid rgba(0,0,0,0.05); transition: all 0.4s ease; }
+        .product-card:hover { transform: translateY(-8px); border-color: #d97706; box-shadow: 0 20px 40px -10px rgba(217, 119, 6, 0.15); }
+        
+        .modal { opacity: 0; pointer-events: none; transition: all 0.3s ease; }
+        .modal.active { opacity: 1; pointer-events: auto; }
+        
+        .toast { transform: translateY(100px); opacity: 0; transition: all 0.4s ease; }
+        .toast.show { transform: translateY(0); opacity: 1; }
+        
+        .admin-sidebar::-webkit-scrollbar { width: 4px; }
+        .admin-sidebar::-webkit-scrollbar-thumb { background: #334155; }
+    </style>
+</head>
+<body class="antialiased selection:bg-gold-500 selection:text-white">
+
+    <!-- Toast Notifications -->
+    <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 z-[9999] bg-luxury-900 text-white px-6 py-3 rounded-full font-bold shadow-2xl flex items-center gap-3 toast border border-gold-500">
+        <i class="fas fa-check-circle text-gold-500"></i>
+        <span id="toast-msg">Success!</span>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- MAIN WEBSITE FRONTEND -->
+    <!-- ============================================== -->
+    <div id="frontend-container">
+        <!-- Navigation -->
+        <nav class="glass-nav fixed w-full z-50 py-3">
+            <div class="container mx-auto px-6 flex justify-between items-center">
+                <a href="#" class="flex items-center gap-3">
+                    <img src="1790779746748_2.png" alt="Aerozip Logo" class="h-12 md:h-14 mix-blend-multiply hover:scale-105 transition-transform" onerror="this.style.display='none'; document.getElementById('logo-fallback').classList.remove('hidden');">
+                    <div id="logo-fallback" class="hidden flex flex-col">
+                        <span class="text-[8px] font-black tracking-[0.2em] text-slate-400 uppercase leading-none">Pranavi Makers</span>
+                        <span class="font-display font-black text-2xl tracking-[0.2em] uppercase text-luxury-900 leading-none">Aerozip</span>
+                    </div>
+                </a>
+                
+                <div class="hidden lg:flex items-center space-x-8 text-xs font-bold uppercase tracking-widest text-luxury-800">
+                    <a href="#collections" class="hover:text-gold-500 transition-colors">Catalog</a>
+                    <a href="#b2b" class="hover:text-gold-500 transition-colors">Bulk Orders</a>
+                    <button onclick="openModal('sample-modal')" class="hover:text-gold-500 transition-colors text-gold-600">Request Sample</button>
+                </div>
+
+                <div class="flex items-center gap-5 text-luxury-900">
+                    <button onclick="toggleSearch()" class="hover:text-gold-500 transition-colors"><i class="fas fa-search"></i></button>
+                    <!-- Login / Profile Icon -->
+                    <button onclick="openModal('login-modal')" class="hover:text-gold-500 transition-colors text-xl">
+                        <i class="fas fa-user-circle"></i>
+                    </button>
+                    <!-- Cart Icon -->
+                    <button onclick="openModal('cart-modal')" class="hover:text-gold-500 transition-colors relative group">
+                        <i class="fas fa-shopping-bag text-lg"></i>
+                        <span id="cart-count" class="absolute -top-2 -right-3 bg-gold-500 text-white text-[10px] font-black h-5 w-5 flex items-center justify-center rounded-full group-hover:scale-110 transition-transform">0</span>
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <header class="relative min-h-[85vh] flex items-center justify-center overflow-hidden custom-luxury-bg pt-20">
+            <div class="container mx-auto px-6 relative z-10 flex flex-col md:flex-row items-center gap-12">
+                <div class="flex-1 text-center md:text-left">
+                    <span class="text-gold-600 font-bold uppercase tracking-[0.4em] text-xs mb-6 block bg-gold-50 inline-block px-4 py-1 rounded-full border border-gold-200">B2B Manufacturing Hub</span>
+                    <h1 class="text-5xl md:text-7xl font-display font-black leading-[1.1] mb-6 uppercase tracking-tighter text-luxury-900">
+                        Elevate Your <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-gold-500 to-gold-700">Corporate Standard.</span>
+                    </h1>
+                    <p class="text-lg text-slate-600 max-w-xl mb-10 font-medium leading-relaxed mx-auto md:mx-0">
+                        Aerozip provides aerospace-grade bulk luggage for businesses. Sellers can partner with us to supply premium new accessories globally.
+                    </p>
+                    <div class="flex flex-wrap justify-center md:justify-start gap-4">
+                        <button onclick="document.getElementById('collections').scrollIntoView()" class="bg-luxury-900 text-white px-8 py-4 font-bold uppercase tracking-widest text-xs hover:bg-gold-600 transition-all rounded-xl shadow-lg">View Catalog</button>
+                        <button onclick="openModal('sample-modal')" class="bg-white border-2 border-luxury-900 text-luxury-900 px-8 py-4 font-bold uppercase tracking-widest text-xs hover:bg-luxury-50 transition-all rounded-xl">Request a Sample</button>
+                    </div>
+                </div>
+                <div class="flex-1 relative hidden md:block">
+                    <div class="relative w-full max-w-md mx-auto">
+                        <div class="absolute inset-0 bg-gold-400 rounded-full blur-[100px] opacity-20"></div>
+                        <img src="https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=800&q=80" alt="Premium Bag" class="relative z-10 w-full h-auto object-cover rounded-[3rem] shadow-2xl border-4 border-white">
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Product Catalog -->
+        <main id="collections" class="container mx-auto px-6 py-24">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-display font-black uppercase tracking-tighter mb-4 text-luxury-900">Corporate Catalog</h2>
+                <div class="flex justify-center gap-4 flex-wrap mt-6">
+                    <button onclick="filterCatalog('all', this)" class="filter-btn text-gold-600 font-bold uppercase tracking-widest text-xs px-4 py-2 border-b-2 border-gold-500">All</button>
+                    <button onclick="filterCatalog('hard', this)" class="filter-btn text-slate-400 font-bold uppercase tracking-widest text-xs px-4 py-2 border-b-2 border-transparent transition-all">Luggage</button>
+                    <button onclick="filterCatalog('accessories', this)" class="filter-btn text-slate-400 font-bold uppercase tracking-widest text-xs px-4 py-2 border-b-2 border-transparent transition-all">Accessories</button>
+                </div>
+            </div>
+            <div id="catalog-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Rendered via JS -->
+            </div>
+        </main>
+
+        <!-- Dynamic Corporate Banners (Managed from CMS) -->
+        <section id="dynamic-banners-section" class="container mx-auto px-6 py-10 hidden">
+            <div id="frontend-banners-container" class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Rendered via JS -->
+            </div>
+        </section>
+
+        <!-- Dynamic Bulk Orders -->
+        <section id="b2b" class="py-24 bg-luxury-900 text-white relative overflow-hidden">
+            <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1552342525-46b0a883726d?auto=format&fit=crop&w=1920&q=80')] bg-cover bg-center opacity-10 mix-blend-luminosity"></div>
+            <div class="container mx-auto px-6 grid lg:grid-cols-2 gap-16 items-center relative z-10">
+                <div>
+                    <span class="text-gold-500 font-bold uppercase tracking-widest text-xs mb-4 block"><i class="fas fa-handshake"></i> Partner With Us</span>
+                    <h2 class="text-5xl font-display font-black uppercase mb-6 leading-tight">Smart Bulk <br>Purchasing.</h2>
+                    <p class="text-slate-400 mb-8 leading-relaxed font-light">
+                        Perfect for gifting or retail stocking. The more units you order, the higher your discount. Data is secured and managed by Pranavi Makers.
+                    </p>
+                    <div class="bg-luxury-800/50 p-6 rounded-2xl border border-luxury-700 backdrop-blur-sm mb-6">
+                        <h4 class="font-bold text-gold-400 uppercase text-sm mb-2"><i class="fas fa-tags"></i> Dynamic Discount Tiers</h4>
+                        <p class="text-xs text-slate-300">10-49 Units: 15% OFF | 50-99 Units: 30% OFF | 100+ Units: 45% OFF</p>
+                    </div>
+                    <button onclick="openModal('sample-modal')" class="border border-white text-white px-6 py-3 font-bold uppercase tracking-widest text-xs hover:bg-white hover:text-luxury-900 transition-all rounded-xl">Order a Sample First</button>
+                </div>
+                
+                <div class="bg-white text-luxury-900 p-10 rounded-[2rem] shadow-2xl relative">
+                    <h3 class="text-2xl font-display font-black uppercase mb-2">Cost Calculator</h3>
+                    <p class="text-xs text-slate-500 mb-8 font-bold uppercase">Get instant B2B estimates</p>
+                    
+                    <form onsubmit="submitBulkCalculator(event)" class="space-y-6">
+                        <input type="text" id="calc-name" placeholder="Company / Your Name" required class="w-full bg-luxury-50 border border-slate-200 p-4 rounded-xl text-sm font-bold outline-none focus:border-gold-500">
+                        <select id="calc-type" onchange="calculateBulkPrice()" required class="w-full bg-luxury-50 border border-slate-200 p-4 rounded-xl font-bold text-sm outline-none focus:border-gold-500 appearance-none">
+                            <option value="0">Loading products...</option>
+                        </select>
+                        <div>
+                            <label class="text-xs font-bold text-slate-500 uppercase ml-1">Quantity Needed</label>
+                            <input type="number" id="calc-qty" min="10" value="10" oninput="calculateBulkPrice()" required class="w-full bg-luxury-50 border border-slate-200 p-4 rounded-xl font-black text-lg mt-1 outline-none focus:border-gold-500">
+                        </div>
+
+                        <div class="bg-luxury-900 p-6 rounded-xl text-white">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-slate-400 text-xs uppercase font-bold">Estimated Cost</span>
+                                <span id="calc-discount-label" class="bg-gold-500 text-white text-[10px] px-2 py-1 rounded font-black hidden">-15% Applied</span>
+                            </div>
+                            <div class="text-4xl font-display font-black text-gold-400" id="calc-price">₹0</div>
+                        </div>
+                        <button type="submit" class="w-full bg-gold-500 text-white py-4 rounded-xl font-black uppercase tracking-widest hover:bg-gold-600 transition-colors shadow-lg">Send Inquiry</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================== -->
+        <!-- PREMIUM FOOTER -->
+        <!-- ============================================== -->
+        <footer class="bg-luxury-950 text-slate-300 py-16 border-t border-slate-800 relative mt-20">
+            <div class="container mx-auto px-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12 border-b border-slate-800 pb-12">
+                    
+                    <!-- Col 1: About -->
+                    <div>
+                        <div class="flex items-center gap-3 mb-6">
+                            <img src="1790779746748_2.png" alt="Aerozip Logo" class="h-10 filter invert opacity-90" onerror="this.style.display='none'">
+                            <span class="font-display font-black text-xl tracking-[0.2em] uppercase text-white">Aerozip</span>
+                        </div>
+                        <p class="text-xs leading-relaxed text-slate-400 mb-6">With 15 years of offline trading expertise, Pranavi Makers presents Aerozip Industries—your trusted partner for B2B aerospace-grade luggage and premium accessories.</p>
+                        <div class="space-y-2 text-xs">
+                            <p><i class="fas fa-map-marker-alt text-gold-500 mr-2 w-4"></i> Satpur Ambad Link Road, MIDC Ambad, Nashik 422010</p>
+                            <p><i class="fas fa-envelope text-gold-500 mr-2 w-4"></i> aerozip.official@gmail.com</p>
+                            <p><i class="fas fa-phone-alt text-gold-500 mr-2 w-4"></i> +91 8237434405</p>
+                        </div>
+                    </div>
+
+                    <!-- Col 2: Company -->
+                    <div>
+                        <h4 class="text-white font-bold uppercase tracking-widest text-sm mb-6 border-l-2 border-gold-500 pl-3">Company</h4>
+                        <ul class="space-y-3 text-xs uppercase tracking-widest font-bold text-slate-400">
+                            <li><button onclick="openPolicy('about')" class="hover:text-gold-500 transition-colors">Our Story & About Us</button></li>
+                            <li><button onclick="openPolicy('shipping')" class="hover:text-gold-500 transition-colors">Shipping & Delivery</button></li>
+                            <li><button onclick="openPolicy('refund')" class="hover:text-gold-500 transition-colors">Return & Refund Policy</button></li>
+                            <li><button onclick="openModal('sample-modal')" class="hover:text-gold-500 transition-colors">Request a Sample</button></li>
+                        </ul>
+                    </div>
+
+                    <!-- Col 3: Support & Legal -->
+                    <div>
+                        <h4 class="text-white font-bold uppercase tracking-widest text-sm mb-6 border-l-2 border-gold-500 pl-3">Legal & Seller</h4>
+                        <ul class="space-y-3 text-xs uppercase tracking-widest font-bold text-slate-400">
+                            <li><button onclick="openPolicy('seller')" class="hover:text-gold-500 transition-colors">Seller Guidelines</button></li>
+                            <li><button onclick="openPolicy('terms')" class="hover:text-gold-500 transition-colors">Terms & Conditions</button></li>
+                            <li><button onclick="openPolicy('privacy')" class="hover:text-gold-500 transition-colors">Privacy Policy</button></li>
+                            <li><button onclick="openModal('login-modal')" class="hover:text-gold-500 transition-colors">Login / Register</button></li>
+                        </ul>
+                    </div>
+
+                    <!-- Col 4: Payments & Social -->
+                    <div>
+                        <h4 class="text-white font-bold uppercase tracking-widest text-sm mb-6 border-l-2 border-gold-500 pl-3">Secure B2B Payments</h4>
+                        <p class="text-xs text-slate-400 mb-4">We accept the following secure corporate payment methods for bulk orders:</p>
+                        <div class="flex gap-3 text-2xl text-slate-500 mb-8">
+                            <i class="fas fa-university hover:text-gold-500 transition-colors" title="NEFT / RTGS"></i>
+                            <i class="fas fa-money-check hover:text-gold-500 transition-colors" title="Bank Transfer"></i>
+                            <i class="fas fa-file-invoice-dollar hover:text-gold-500 transition-colors" title="GST Invoice"></i>
+                        </div>
+
+                        <h4 class="text-white font-bold uppercase tracking-widest text-sm mb-4">Connect With Us</h4>
+                        <div class="flex gap-4 text-xl">
+                            <a href="#" class="text-slate-400 hover:text-white transition-colors"><i class="fab fa-instagram"></i></a>
+                            <a href="#" class="text-slate-400 hover:text-white transition-colors"><i class="fab fa-facebook"></i></a>
+                            <a href="#" class="text-slate-400 hover:text-white transition-colors"><i class="fab fa-youtube"></i></a>
+                            <a href="https://wa.me/918237434405" target="_blank" class="text-slate-400 hover:text-green-500 transition-colors"><i class="fab fa-whatsapp"></i></a>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="flex flex-col md:flex-row justify-between items-center text-[10px] uppercase tracking-[0.2em] font-bold text-slate-500">
+                    <p>© 2026 Aerozip Industries by Pranavi Makers. All Rights Reserved.</p>
+                    <p class="mt-4 md:mt-0 cursor-pointer hover:text-gold-500 transition-colors" onclick="adminSecretAccess()">System Administration</p>
+                </div>
+            </div>
+        </footer>
+    </div> <!-- End Frontend -->
+
+    <!-- ============================================== -->
+    <!-- 📄 DYNAMIC POLICY/INFO MODAL -->
+    <!-- ============================================== -->
+    <div id="policy-modal" class="modal fixed inset-0 z-[700] bg-luxury-900/90 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white p-8 md:p-12 rounded-[2rem] max-w-3xl w-full shadow-2xl relative h-[70vh] flex flex-col">
+            <button onclick="closeModal('policy-modal')" class="absolute top-6 right-6 text-slate-400 hover:text-red-500"><i class="fas fa-times text-2xl"></i></button>
+            <h3 id="policy-title" class="text-3xl font-display font-black uppercase text-luxury-900 border-b pb-4 mb-6">Policy Title</h3>
+            <div id="policy-content" class="flex-1 overflow-y-auto text-sm text-slate-600 leading-relaxed space-y-4 pr-4">
+                <!-- Content loaded dynamically via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- 🚪 LOGIN SELECTION MODAL -->
+    <!-- ============================================== -->
+    <div id="login-modal" class="modal fixed inset-0 z-[600] bg-luxury-900/90 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white p-10 rounded-[2rem] max-w-sm w-full text-center shadow-2xl relative">
+            <button onclick="closeModal('login-modal')" class="absolute top-4 right-4 text-slate-400 hover:text-red-500"><i class="fas fa-times"></i></button>
+            <i class="fas fa-user-circle text-gold-500 text-5xl mb-4"></i>
+            <h3 class="text-2xl font-display font-black uppercase text-luxury-900 mb-2">Welcome Back</h3>
+            <p class="text-xs text-slate-500 uppercase tracking-widest font-bold mb-8">Select your account type</p>
+            
+            <div class="space-y-4">
+                <button onclick="loginAsBuyer()" class="w-full bg-luxury-900 text-white font-bold py-4 rounded-xl uppercase tracking-widest text-xs hover:bg-gold-500 transition-all shadow-lg flex items-center justify-center gap-3">
+                    <i class="fas fa-shopping-bag"></i> Login as Buyer
+                </button>
+                <button onclick="loginAsSeller()" class="w-full bg-white border-2 border-luxury-900 text-luxury-900 font-bold py-4 rounded-xl uppercase tracking-widest text-xs hover:bg-luxury-50 transition-all flex items-center justify-center gap-3">
+                    <i class="fas fa-store"></i> Login as Seller
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- 🎁 REQUEST SAMPLE MODAL -->
+    <!-- ============================================== -->
+    <div id="sample-modal" class="modal fixed inset-0 z-[600] bg-luxury-900/90 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white p-10 rounded-[2rem] max-w-md w-full shadow-2xl relative">
+            <button onclick="closeModal('sample-modal')" class="absolute top-6 right-6 text-slate-400 hover:text-red-500"><i class="fas fa-times text-xl"></i></button>
+            <div class="mb-6">
+                <i class="fas fa-box-open text-gold-500 text-3xl mb-3"></i>
+                <h3 class="text-2xl font-display font-black uppercase text-luxury-900 leading-none">Request Sample</h3>
+                <p class="text-xs text-slate-500 uppercase tracking-widest font-bold mt-2">Test our quality before bulk ordering</p>
+            </div>
+            
+            <form onsubmit="submitSampleRequest(event)" class="space-y-4">
+                <input type="text" id="sample-name" placeholder="Company / Contact Name" required class="w-full bg-luxury-50 border border-slate-200 p-3 rounded-lg text-sm outline-none focus:border-gold-500">
+                <select id="sample-product" required class="w-full bg-luxury-50 border border-slate-200 p-3 rounded-lg text-sm outline-none focus:border-gold-500 appearance-none">
+                    <option value="">-- Select Product for Sample --</option>
+                    <!-- Populated by JS -->
+                </select>
+                <textarea id="sample-address" placeholder="Delivery Address" required class="w-full bg-luxury-50 border border-slate-200 p-3 rounded-lg text-sm outline-none focus:border-gold-500 h-20"></textarea>
+                <button type="submit" class="w-full bg-luxury-900 text-white font-bold py-4 rounded-xl uppercase tracking-widest text-xs hover:bg-gold-500 transition-all shadow-lg mt-2">Submit Request</button>
+                <p class="text-[10px] text-slate-400 text-center uppercase mt-2">Our team will contact you regarding sample availability and shipping.</p>
+            </form>
+        </div>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- 🛍️ B2B CHECKOUT MODAL (No Payment, GST Only) -->
+    <!-- ============================================== -->
+    <div id="cart-modal" class="modal fixed inset-0 z-[600] bg-luxury-900/90 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-[2rem] w-full max-w-4xl flex flex-col md:flex-row overflow-hidden shadow-2xl relative">
+            <button onclick="closeModal('cart-modal')" class="absolute top-4 right-4 z-10 text-slate-400 hover:text-red-500"><i class="fas fa-times text-xl"></i></button>
+            <div class="w-full md:w-1/2 bg-luxury-50 p-8 flex flex-col h-[500px]">
+                <h3 class="text-xl font-display font-black uppercase tracking-widest text-luxury-900 mb-6 border-b pb-4">Bulk Order Request</h3>
+                <div id="cart-items" class="flex-1 overflow-y-auto space-y-4 pr-2"></div>
+                <div class="pt-6 border-t mt-4">
+                    <div class="flex justify-between items-center text-luxury-900">
+                        <span class="font-bold uppercase text-xs">Estimated Total</span>
+                        <span id="cart-total" class="text-3xl font-black text-gold-600">₹0</span>
+                    </div>
+                </div>
+            </div>
+            <div class="w-full md:w-1/2 p-8 bg-white flex flex-col justify-center">
+                <h4 class="font-bold uppercase text-sm mb-6 text-luxury-900"><i class="fas fa-file-invoice text-gold-500 mr-2"></i>GST & Company Details</h4>
+                <form onsubmit="submitB2BOrder(event)" class="space-y-4">
+                    <input type="text" id="b2b-company" placeholder="Company Name" required class="w-full bg-luxury-50 border border-slate-200 p-3 rounded-lg text-sm outline-none focus:border-gold-500">
+                    <input type="text" id="b2b-gst" placeholder="GSTIN Number" required class="w-full bg-luxury-50 border border-slate-200 p-3 rounded-lg text-sm outline-none focus:border-gold-500 uppercase">
+                    <textarea id="b2b-address" placeholder="Shipping Address" required class="w-full bg-luxury-50 border border-slate-200 p-3 rounded-lg text-sm outline-none focus:border-gold-500 h-24"></textarea>
+                    <button type="submit" class="w-full bg-luxury-900 text-white font-bold py-4 rounded-xl uppercase tracking-widest text-xs hover:bg-gold-500 transition-all shadow-lg">Generate Order Request</button>
+                    <p class="text-[9px] text-slate-400 text-center uppercase mt-2">No upfront payment. Invoice will be shared post admin verification.</p>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- 👤 BUYER DASHBOARD MODAL -->
+    <!-- ============================================== -->
+    <div id="buyer-dashboard-modal" class="modal fixed inset-0 z-[600] bg-luxury-900/90 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white p-8 rounded-[2rem] max-w-4xl w-full shadow-2xl relative h-[80vh] flex flex-col">
+            <button onclick="closeModal('buyer-dashboard-modal')" class="absolute top-6 right-6 text-slate-400 hover:text-red-500"><i class="fas fa-times text-xl"></i></button>
+            <div class="flex items-center gap-4 mb-6 border-b pb-4">
+                <div class="w-12 h-12 bg-luxury-900 rounded-full flex items-center justify-center text-white text-xl"><i class="fas fa-building"></i></div>
+                <div>
+                    <h3 class="text-2xl font-display font-black uppercase text-luxury-900 leading-none">Buyer Dashboard</h3>
+                    <span class="text-xs text-slate-500 uppercase tracking-widest font-bold">Manage Orders & Wishlist</span>
+                </div>
+            </div>
+            
+            <div class="flex gap-4 mb-6 border-b border-slate-200 pb-2">
+                <button onclick="switchBuyerTab('orders')" id="btab-orders" class="buyer-tab text-gold-600 font-bold uppercase text-xs tracking-widest border-b-2 border-gold-500 px-2 py-1">My Orders</button>
+                <button onclick="switchBuyerTab('wishlist')" id="btab-wishlist" class="buyer-tab text-slate-400 font-bold uppercase text-xs tracking-widest border-b-2 border-transparent px-2 py-1 hover:text-luxury-900 transition-colors">Wishlist</button>
+            </div>
+
+            <div id="buyer-view-orders" class="flex-1 overflow-y-auto buyer-view">
+                <div class="bg-luxury-50 border border-slate-200 rounded-xl overflow-hidden">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-luxury-100 text-[10px] uppercase font-black text-slate-500">
+                            <tr><th class="p-4">Order ID</th><th class="p-4">Date</th><th class="p-4">Amount</th><th class="p-4">Status</th><th class="p-4">Invoice</th></tr>
+                        </thead>
+                        <tbody id="customer-orders-list" class="divide-y divide-slate-200"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="buyer-view-wishlist" class="flex-1 overflow-y-auto buyer-view hidden">
+                <div id="buyer-wishlist-grid" class="grid grid-cols-1 sm:grid-cols-3 gap-6"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- 🤝 SELLER PORTAL MODAL -->
+    <!-- ============================================== -->
+    <div id="seller-dashboard-modal" class="modal fixed inset-0 z-[600] bg-luxury-900/90 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white p-10 rounded-[2rem] max-w-2xl w-full shadow-2xl relative">
+            <button onclick="closeModal('seller-dashboard-modal')" class="absolute top-6 right-6 text-slate-400 hover:text-red-500"><i class="fas fa-times text-xl"></i></button>
+            <div class="text-center mb-8">
+                <i class="fas fa-store text-gold-500 text-4xl mb-4"></i>
+                <h3 class="text-3xl font-display font-black uppercase text-luxury-900">Seller Dashboard</h3>
+                <p class="text-xs text-slate-500 uppercase tracking-widest font-bold mt-2">Upload New Accessories to Aerozip Catalog</p>
+            </div>
+            
+            <form onsubmit="submitSellerProduct(event)" class="space-y-4">
+                <input type="text" id="sell-name" placeholder="Accessory Name (e.g. Premium Leather Tag)" required class="w-full bg-luxury-50 border border-slate-200 p-3 rounded-lg text-sm outline-none focus:border-gold-500 font-bold">
+                <div class="grid grid-cols-2 gap-4">
+                    <input type="number" id="sell-price" placeholder="Selling Price (₹)" required class="w-full bg-luxury-50 border border-slate-200 p-3 rounded-lg text-sm outline-none focus:border-gold-500">
+                    <input type="number" id="sell-qty" placeholder="Available Stock" required class="w-full bg-luxury-50 border border-slate-200 p-3 rounded-lg text-sm outline-none focus:border-gold-500">
+                </div>
+                <div class="border-2 border-dashed border-slate-300 p-6 rounded-xl text-center bg-luxury-50 hover:border-gold-500 transition-colors cursor-pointer relative">
+                    <input type="file" id="sell-img" required accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onchange="document.getElementById('sell-filename').innerText = this.files[0].name">
+                    <i class="fas fa-cloud-upload-alt text-3xl text-slate-400 mb-2"></i>
+                    <p class="text-sm font-bold text-luxury-900">Click to Upload Accessory Photo</p>
+                    <p id="sell-filename" class="text-xs text-gold-600 mt-2 font-bold"></p>
+                </div>
+                <button type="submit" class="w-full bg-luxury-900 text-white font-bold py-4 rounded-xl uppercase tracking-widest hover:bg-gold-500 transition-all shadow-lg mt-4">Submit to Admin for Approval</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- 🔒 ADMIN PASSWORD MODAL -->
+    <!-- ============================================== -->
+    <div id="auth-modal" class="modal fixed inset-0 z-[800] bg-luxury-900/90 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white p-10 rounded-[2rem] max-w-sm w-full text-center shadow-2xl relative">
+            <button onclick="closeModal('auth-modal')" class="absolute top-4 right-4 text-slate-400 hover:text-red-500"><i class="fas fa-times"></i></button>
+            <i class="fas fa-lock text-gold-500 text-4xl mb-4"></i>
+            <h3 class="text-2xl font-display font-black uppercase text-luxury-900 mb-2">Vault Access</h3>
+            <p class="text-xs text-slate-500 uppercase tracking-widest font-bold mb-6">Enter Admin Password</p>
+            <input type="password" id="admin-password" placeholder="••••••••" class="w-full bg-luxury-50 border border-slate-200 p-4 rounded-xl text-center text-lg font-black tracking-[0.3em] outline-none focus:border-gold-500 mb-4">
+            <button onclick="verifyPassword()" class="w-full bg-luxury-900 text-white font-bold py-4 rounded-xl uppercase tracking-widest hover:bg-gold-500 transition-all shadow-lg">Authenticate</button>
+        </div>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- 🖥️ FULL SCREEN ADMIN DASHBOARD -->
+    <!-- ============================================== -->
+    <div id="full-admin-panel" class="hidden fixed inset-0 z-[1000] bg-luxury-950 flex text-white overflow-hidden">
+        
+        <!-- Sidebar Navigation -->
+        <aside class="w-64 bg-luxury-900 border-r border-slate-800 flex flex-col h-full">
+            <div class="p-6 border-b border-slate-800 flex items-center gap-3">
+                <i class="fas fa-shield-alt text-gold-500 text-2xl"></i>
+                <div>
+                    <h2 class="font-display font-black uppercase tracking-widest text-gold-500 leading-none">Aerozip Admin</h2>
+                    <span class="text-[8px] text-slate-400 uppercase tracking-widest">Master Control</span>
+                </div>
+            </div>
+            
+            <div class="flex-1 overflow-y-auto admin-sidebar p-4 space-y-1">
+                <!-- Group 1 -->
+                <div class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 mt-2 ml-2">Dashboard & Market</div>
+                <button onclick="switchAdminTab('dashboard')" class="w-full text-left px-4 py-2.5 rounded-xl font-bold text-xs uppercase tracking-widest bg-gold-500 text-luxury-900 transition-all admin-nav-btn" data-target="dashboard"><i class="fas fa-chart-pie w-5"></i> Dashboard</button>
+                <button onclick="switchAdminTab('inventory')" class="w-full text-left px-4 py-2.5 rounded-xl font-bold text-xs uppercase tracking-widest text-slate-400 hover:bg-luxury-800 hover:text-white transition-all admin-nav-btn" data-target="inventory"><i class="fas fa-suitcase-rolling w-5"></i> Products / Bags</button>
+                <button onclick="switchAdminTab('marketplace')" class="w-full text-left px-4 py-2.5 rounded-xl font-bold text-xs uppercase tracking-widest text-slate-400 hover:bg-luxury-800 hover:text-white transition-all admin-nav-btn" data-target="marketplace"><i class="fas fa-recycle w-5"></i> Buy/Sell Market</button>
+                
+                <!-- Group 2 -->
+                <div class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 mt-6 ml-2">Operations</div>
+                <button onclick="switchAdminTab('orders')" class="w-full text-left px-4 py-2.5 rounded-xl font-bold text-xs uppercase tracking-widest text-slate-400 hover:bg-luxury-800 hover:text-white transition-all admin-nav-btn" data-target="orders"><i class="fas fa-box-open w-5"></i> Orders</button>
+                <button onclick="switchAdminTab('delivery')" class="w-full text-left px-4 py-2.5 rounded-xl font-bold text-xs uppercase tracking-widest text-slate-400 hover:bg-luxury-800 hover:text-white transition-all admin-nav-btn" data-target="delivery"><i class="fas fa-truck w-5"></i> Delivery</button>
+                <button onclick="switchAdminTab('customers')" class="w-full text-left px-4 py-2.5 rounded-xl font-bold text-xs uppercase tracking-widest text-slate-400 hover:bg-luxury-800 hover:text-white transition-all admin-nav-btn" data-target="customers"><i class="fas fa-users w-5"></i> Customers</button>
+                <button onclick="switchAdminTab('sellers')" class="w-full text-left px-4 py-2.5 rounded-xl font-bold text-xs uppercase tracking-widest text-slate-400 hover:bg-luxury-800 hover:text-white transition-all admin-nav-btn" data-target="sellers"><i class="fas fa-store w-5"></i> Sellers</button>
+                <button onclick="switchAdminTab('samples')" class="w-full text-left px-4 py-2.5 rounded-xl font-bold text-xs uppercase tracking-widest text-slate-400 hover:bg-luxury-800 hover:text-white transition-all admin-nav-btn" data-target="samples"><i class="fas fa-vial w-5"></i> Samples</button>
+
+                <!-- Group 3 -->
+                <div class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 mt-6 ml-2">Catalog Mgmt</div>
+                <button onclick="switchAdminTab('accessories')" class="w-full text-left px-4 py-2.5 rounded-xl font-bold text-xs uppercase tracking-widest text-slate-400 hover:bg-luxury-800 hover:text-white transition-all admin-nav-btn" data-target="accessories"><i class="fas fa-key w-5"></i> Accessories</button>
+                <button onclick="switchAdminTab('categories')" class="w-full text-left px-4 py-2.5 rounded-xl font-bold text-xs uppercase tracking-widest text-slate-400 hover:bg-luxury-800 hover:text-white transition-all admin-nav-btn" data-target="categories"><i class="fas fa-tags w-5"></i> Categories & Brands</button>
+
+                <!-- Group 4 -->
+                <div class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 mt-6 ml-2">Finance & Marketing</div>
+                <button onclick="switchAdminTab('finance')" class="w-full text-left px-4 py-2.5 rounded-xl font-bold text-xs uppercase tracking-widest text-slate-400 hover:bg-luxury-800 hover:text-white transition-all admin-nav-btn" data-target="finance"><i class="fas fa-wallet w-5"></i> Payments & Finance</button>
+                <button onclick="switchAdminTab('offers')" class="w-full text-left px-4 py-2.5 rounded-xl font-bold text-xs uppercase tracking-widest text-slate-400 hover:bg-luxury-800 hover:text-white transition-all admin-nav-btn" data-target="offers"><i class="fas fa-ticket-alt w-5"></i> Coupons & Offers</button>
+                <button onclick="switchAdminTab('reviews')" class="w-full text-left px-4 py-2.5 rounded-xl font-bold text-xs uppercase tracking-widest text-slate-400 hover:bg-luxury-800 hover:text-white transition-all admin-nav-btn" data-target="reviews"><i class="fas fa-star w-5"></i> Reviews & Ratings</button>
+                <button onclick="switchAdminTab('notifications')" class="w-full text-left px-4 py-2.5 rounded-xl font-bold text-xs uppercase tracking-widest text-slate-400 hover:bg-luxury-800 hover:text-white transition-all admin-nav-btn" data-target="notifications"><i class="fas fa-bell w-5"></i> Notifications</button>
+
+                <!-- Group 5 -->
+                <div class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 mt-6 ml-2">System</div>
+                <button onclick="switchAdminTab('cms')" class="w-full text-left px-4 py-2.5 rounded-xl font-bold text-xs uppercase tracking-widest text-slate-400 hover:bg-luxury-800 hover:text-white transition-all admin-nav-btn" data-target="cms"><i class="fas fa-desktop w-5"></i> Website Mgmt</button>
+                <button onclick="switchAdminTab('analytics')" class="w-full text-left px-4 py-2.5 rounded-xl font-bold text-xs uppercase tracking-widest text-slate-400 hover:bg-luxury-800 hover:text-white transition-all admin-nav-btn" data-target="analytics"><i class="fas fa-chart-line w-5"></i> Analytics</button>
+                <button onclick="switchAdminTab('security')" class="w-full text-left px-4 py-2.5 rounded-xl font-bold text-xs uppercase tracking-widest text-slate-400 hover:bg-luxury-800 hover:text-white transition-all admin-nav-btn" data-target="security"><i class="fas fa-lock w-5"></i> Admin & Security</button>
+            </div>
+            
+            <div class="p-4 border-t border-slate-800">
+                <button onclick="exitAdmin()" class="w-full bg-slate-800 hover:bg-red-500 text-white py-3 rounded-xl font-bold uppercase text-xs tracking-widest transition-all"><i class="fas fa-sign-out-alt mr-2"></i> Exit Panel</button>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 p-8 overflow-y-auto relative">
+            
+            <!-- VIEW: DASHBOARD (1) -->
+            <div id="admin-view-dashboard" class="admin-view-section">
+                <h2 class="text-3xl font-display font-black uppercase mb-8 text-white">Dashboard Overview</h2>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-luxury-800 p-6 rounded-2xl border border-slate-700">
+                        <p class="text-xs text-slate-400 font-bold uppercase tracking-widest mb-2">Today's Sales</p>
+                        <h3 class="text-3xl font-black text-gold-500" id="dash-sales">₹0</h3>
+                    </div>
+                    <div class="bg-luxury-800 p-6 rounded-2xl border border-slate-700">
+                        <p class="text-xs text-slate-400 font-bold uppercase tracking-widest mb-2">B2B Orders</p>
+                        <h3 class="text-3xl font-black text-white" id="dash-orders">0</h3>
+                    </div>
+                    <div class="bg-luxury-800 p-6 rounded-2xl border border-slate-700">
+                        <p class="text-xs text-slate-400 font-bold uppercase tracking-widest mb-2">Sample Reqs</p>
+                        <h3 class="text-3xl font-black text-white" id="dash-samples">0</h3>
+                    </div>
+                    <div class="bg-luxury-800 p-6 rounded-2xl border border-slate-700">
+                        <p class="text-xs text-slate-400 font-bold uppercase tracking-widest mb-2">Pending Sellers</p>
+                        <h3 class="text-3xl font-black text-gold-500" id="dash-sellers">0</h3>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW: INVENTORY / PRODUCTS (2) -->
+            <div id="admin-view-inventory" class="admin-view-section hidden">
+                <div class="flex justify-between items-center mb-8">
+                    <h2 class="text-3xl font-display font-black uppercase text-white">Inventory Management</h2>
+                </div>
+                
+                <div class="bg-luxury-800 p-8 rounded-2xl border border-slate-700 mb-8">
+                    <h4 class="font-bold uppercase text-sm mb-6 text-gold-400"><i class="fas fa-box mr-2"></i>Add New Product</h4>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="text-xs text-slate-400 font-bold uppercase">Product Name</label>
+                            <input type="text" id="admin-p-name" class="w-full bg-luxury-900 border border-slate-600 p-3 rounded-lg outline-none text-sm text-white">
+                            
+                            <div class="grid grid-cols-2 gap-4 mt-4">
+                                <div>
+                                    <label class="text-xs text-slate-400 font-bold uppercase">Price (₹)</label>
+                                    <input type="number" id="admin-p-price" class="w-full bg-luxury-900 border border-slate-600 p-3 rounded-lg text-white outline-none text-sm">
+                                </div>
+                                <div>
+                                    <label class="text-xs text-slate-400 font-bold uppercase">Stock Qty</label>
+                                    <input type="number" value="10" class="w-full bg-luxury-900 border border-slate-600 p-3 rounded-lg text-white outline-none text-sm">
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="text-xs text-slate-400 font-bold uppercase">Category</label>
+                            <select id="admin-p-cat" class="w-full bg-luxury-900 border border-slate-600 p-3 rounded-lg text-white mt-1 mb-4 text-sm outline-none">
+                                <option value="hard">Hard Luggage</option>
+                                <option value="backpack">Backpack</option>
+                                <option value="accessories">Accessories</option>
+                            </select>
+
+                            <label class="text-xs text-slate-400 font-bold uppercase block mb-1">Product Image</label>
+                            <label for="admin-p-img-file" class="w-full bg-luxury-900 border-2 border-dashed border-slate-600 p-4 rounded-lg text-slate-400 text-sm flex items-center justify-center cursor-pointer hover:border-gold-500 transition-colors">
+                                <i class="fas fa-cloud-upload-alt mr-2 text-xl"></i> Click to Upload File
+                            </label>
+                            <input type="file" id="admin-p-img-file" accept="image/*" class="hidden" onchange="document.getElementById('file-name').innerText = this.files[0].name">
+                            <p id="file-name" class="text-[10px] text-gold-500 mt-1 text-center"></p>
+                        </div>
+                    </div>
+                    <button onclick="adminAddProduct()" class="mt-6 bg-gold-500 text-luxury-900 font-bold py-3 px-8 rounded-xl uppercase text-xs tracking-widest hover:bg-gold-400 transition-colors">Save Product</button>
+                </div>
+
+                <!-- Product List for Admin -->
+                <div class="mt-8">
+                    <h4 class="font-bold uppercase text-sm mb-4 text-white">Current Products</h4>
+                    <div class="bg-luxury-900 border border-slate-700 rounded-xl overflow-hidden">
+                        <table class="w-full text-left text-sm text-slate-300">
+                            <thead class="bg-luxury-950 text-[10px] uppercase font-black text-slate-500">
+                                <tr><th class="p-4">Name</th><th class="p-4">Price</th><th class="p-4">Source</th><th class="p-4 text-right">Action</th></tr>
+                            </thead>
+                            <tbody id="admin-product-list-tbody" class="divide-y divide-slate-800">
+                                <!-- populated via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW: BUY/SELL MARKETPLACE (3) -->
+            <div id="admin-view-marketplace" class="admin-view-section hidden">
+                <h2 class="text-3xl font-display font-black uppercase mb-8 text-white">Pre-Loved Marketplace</h2>
+                <div class="bg-luxury-800 rounded-2xl border border-slate-700 overflow-hidden">
+                    <table class="w-full text-left">
+                        <thead class="bg-luxury-900 border-b border-slate-700 text-[10px] uppercase font-black text-slate-400 tracking-widest">
+                            <tr><th class="p-4">Seller Details</th><th class="p-4">Bag Condition</th><th class="p-4">Asking Price</th><th class="p-4">Status</th><th class="p-4 text-right">Action</th></tr>
+                        </thead>
+                        <tbody><tr><td colspan="5" class="p-8 text-center text-slate-500 font-bold uppercase text-xs">No marketplace listings pending approval.</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- VIEW: ORDERS (4) -->
+            <div id="admin-view-orders" class="admin-view-section hidden">
+                <h2 class="text-3xl font-display font-black uppercase mb-8 text-white">B2B Order Requests</h2>
+                <div class="bg-luxury-800 border border-slate-700 rounded-xl overflow-hidden">
+                    <table class="w-full text-left text-sm text-slate-300">
+                        <thead class="bg-luxury-900 text-[10px] uppercase font-black text-slate-500"><tr><th class="p-4">Order ID</th><th class="p-4">Company & GST</th><th class="p-4">Amount</th><th class="p-4">Status / Routing</th></tr></thead>
+                        <tbody id="admin-orders-table" class="divide-y divide-slate-700"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- VIEW: DELIVERY (5) -->
+            <div id="admin-view-delivery" class="admin-view-section hidden">
+                <h2 class="text-3xl font-display font-black uppercase mb-8 text-white">Delivery & Logistics</h2>
+                <div class="bg-luxury-800 p-10 text-center rounded-2xl border border-slate-700">
+                    <i class="fas fa-truck text-5xl text-gold-500 mb-4"></i>
+                    <h3 class="text-xl font-bold text-white uppercase tracking-widest">Shipping Module Active</h3>
+                    <p class="text-slate-400 text-sm mt-2">Ready to sync with external Shipping APIs for tracking bulk orders.</p>
+                </div>
+            </div>
+
+            <!-- VIEW: CUSTOMERS (6) -->
+            <div id="admin-view-customers" class="admin-view-section hidden">
+                <h2 class="text-3xl font-display font-black uppercase mb-8 text-white">Customer Database</h2>
+                <div class="bg-luxury-800 rounded-2xl border border-slate-700 overflow-hidden">
+                    <table class="w-full text-left text-slate-300">
+                        <thead class="bg-luxury-900 border-b border-slate-700 text-[10px] uppercase font-black text-slate-400 tracking-widest">
+                            <tr><th class="p-4">Name</th><th class="p-4">Email</th><th class="p-4">Total Orders</th><th class="p-4">Status</th><th class="p-4 text-right">Action</th></tr>
+                        </thead>
+                        <tbody><tr><td colspan="5" class="p-8 text-center text-slate-500 font-bold uppercase text-xs">No registered customers yet.</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- VIEW: SELLERS (7) -->
+            <div id="admin-view-sellers" class="admin-view-section hidden">
+                <h2 class="text-3xl font-display font-black uppercase mb-8 text-white">Pending Accessories from Sellers</h2>
+                <div class="bg-luxury-800 border border-slate-700 rounded-xl overflow-hidden">
+                    <table class="w-full text-left text-sm text-slate-300">
+                        <thead class="bg-luxury-900 text-[10px] uppercase font-black text-slate-500"><tr><th class="p-4">Item Details</th><th class="p-4">Price / Stock</th><th class="p-4">Status</th><th class="p-4 text-right">Action</th></tr></thead>
+                        <tbody id="admin-seller-table" class="divide-y divide-slate-700"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- VIEW: SAMPLES (8) -->
+            <div id="admin-view-samples" class="admin-view-section hidden">
+                <h2 class="text-3xl font-display font-black uppercase mb-8 text-white">Sample Requests</h2>
+                <div class="bg-luxury-800 border border-slate-700 rounded-xl overflow-hidden">
+                    <table class="w-full text-left text-sm text-slate-300">
+                        <thead class="bg-luxury-900 text-[10px] uppercase font-black text-slate-500"><tr><th class="p-4">Date</th><th class="p-4">Client Details</th><th class="p-4">Requested Product</th><th class="p-4">Status</th></tr></thead>
+                        <tbody id="admin-samples-table" class="divide-y divide-slate-700"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- VIEW: ACCESSORIES (9) -->
+            <div id="admin-view-accessories" class="admin-view-section hidden">
+                <h2 class="text-3xl font-display font-black uppercase mb-8 text-white">Accessories Inventory</h2>
+                <div class="bg-luxury-800 p-10 text-center rounded-2xl border border-slate-700">
+                    <i class="fas fa-key text-5xl text-gold-500 mb-4"></i>
+                    <h3 class="text-xl font-bold text-white uppercase tracking-widest">Accessories Control</h3>
+                    <p class="text-slate-400 text-sm mt-2">Manage straps, wallets, and covers. Currently unified under Products/Inventory.</p>
+                </div>
+            </div>
+
+            <!-- VIEW: CATEGORIES (10) -->
+            <div id="admin-view-categories" class="admin-view-section hidden">
+                <h2 class="text-3xl font-display font-black uppercase mb-8 text-white">Categories & Brands</h2>
+                <div class="bg-luxury-800 p-10 text-center rounded-2xl border border-slate-700">
+                    <i class="fas fa-tags text-5xl text-gold-500 mb-4"></i>
+                    <h3 class="text-xl font-bold text-white uppercase tracking-widest">Category Management</h3>
+                    <p class="text-slate-400 text-sm mt-2">Module ready for adding sub-categories (Laptop bags, Sling bags, etc).</p>
+                </div>
+            </div>
+
+            <!-- VIEW: FINANCE (11) -->
+            <div id="admin-view-finance" class="admin-view-section hidden">
+                <h2 class="text-3xl font-display font-black uppercase mb-8 text-white">Payments & Finance</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-luxury-800 p-6 rounded-2xl border border-slate-700"><p class="text-xs text-slate-400 font-bold uppercase tracking-widest mb-2">Total Revenue</p><h3 class="text-3xl font-black text-green-400">₹0</h3></div>
+                    <div class="bg-luxury-800 p-6 rounded-2xl border border-slate-700"><p class="text-xs text-slate-400 font-bold uppercase tracking-widest mb-2">Pending Payouts</p><h3 class="text-3xl font-black text-gold-500">₹0</h3></div>
+                    <div class="bg-luxury-800 p-6 rounded-2xl border border-slate-700"><p class="text-xs text-slate-400 font-bold uppercase tracking-widest mb-2">Platform Commission</p><h3 class="text-3xl font-black text-white">₹0</h3></div>
+                </div>
+            </div>
+
+            <!-- VIEW: OFFERS (12) -->
+            <div id="admin-view-offers" class="admin-view-section hidden max-w-2xl">
+                <h2 class="text-3xl font-display font-black uppercase mb-8 text-white">Coupons & Offers</h2>
+                <div class="bg-luxury-800 p-8 rounded-2xl border border-slate-700 text-center">
+                    <i class="fas fa-tags text-4xl text-gold-500 mb-4"></i>
+                    <h4 class="font-bold uppercase text-lg mb-2 text-white">Global Store Discount</h4>
+                    <p class="text-slate-400 text-xs mb-8">Apply a flat discount percentage to all products on the catalog.</p>
+                    <div class="flex items-center gap-4 justify-center mb-8">
+                        <input type="number" id="admin-discount" placeholder="0" min="0" max="90" class="w-32 bg-luxury-900 border border-slate-600 p-4 rounded-xl text-white text-3xl font-black text-center outline-none">
+                        <span class="text-3xl font-black text-slate-500">% OFF</span>
+                    </div>
+                    <button onclick="applyGlobalDiscount()" class="w-full bg-gold-500 text-luxury-900 font-bold py-4 rounded-xl uppercase text-sm tracking-widest hover:bg-gold-400 transition-colors shadow-lg">Apply Offer Live</button>
+                </div>
+            </div>
+
+            <!-- VIEW: REVIEWS (13) -->
+            <div id="admin-view-reviews" class="admin-view-section hidden">
+                <h2 class="text-3xl font-display font-black uppercase mb-8 text-white">Reviews & Ratings</h2>
+                <div class="bg-luxury-800 p-10 text-center rounded-2xl border border-slate-700">
+                    <i class="fas fa-star text-5xl text-gold-500 mb-4"></i>
+                    <h3 class="text-xl font-bold text-white uppercase tracking-widest">Review Moderation Active</h3>
+                    <p class="text-slate-400 text-sm mt-2">Customer reviews will appear here for approval before going live.</p>
+                </div>
+            </div>
+
+            <!-- VIEW: NOTIFICATIONS (14) -->
+            <div id="admin-view-notifications" class="admin-view-section hidden">
+                <h2 class="text-3xl font-display font-black uppercase mb-8 text-white">Wishlist & Notifications</h2>
+                <div class="bg-luxury-800 p-10 text-center rounded-2xl border border-slate-700">
+                    <i class="fas fa-bell text-5xl text-gold-500 mb-4"></i>
+                    <h3 class="text-xl font-bold text-white uppercase tracking-widest">Promo Engine Active</h3>
+                    <p class="text-slate-400 text-sm mt-2">Send bulk alerts to customers who have items in their wishlist.</p>
+                </div>
+            </div>
+
+            <!-- VIEW: CMS (15) -->
+            <div id="admin-view-cms" class="admin-view-section hidden">
+                <h2 class="text-3xl font-display font-black uppercase mb-8 text-white">Website Management (CMS)</h2>
+                
+                <!-- Custom Corporate Banners Module -->
+                <div class="bg-luxury-800 p-8 rounded-2xl border border-slate-700 mb-8">
+                    <div class="flex justify-between items-center mb-6">
+                        <h4 class="font-bold uppercase text-sm text-gold-400"><i class="fas fa-ad mr-2"></i>Corporate & Custom Banners</h4>
+                        <span class="bg-green-500/20 text-green-400 border border-green-500/30 px-3 py-1 rounded text-[10px] font-bold uppercase">Syncs to Frontend</span>
+                    </div>
+                    
+                    <form onsubmit="addPromoBanner(event)" class="grid md:grid-cols-2 gap-6">
+                        <div class="space-y-4">
+                            <input type="text" id="banner-title" placeholder="Banner Title (e.g., Custom Corporate Gifting)" required class="w-full bg-luxury-900 border border-slate-600 p-3 rounded-lg text-sm text-white outline-none">
+                            <input type="text" id="banner-sub" placeholder="Subtitle / Offer text (e.g., Add your company logo for orders > 50)" class="w-full bg-luxury-900 border border-slate-600 p-3 rounded-lg text-sm text-white outline-none">
+                        </div>
+                        <div class="space-y-4">
+                            <label for="banner-img" class="w-full bg-luxury-900 border-2 border-dashed border-slate-600 p-3 rounded-lg text-slate-400 text-sm flex items-center justify-center cursor-pointer hover:border-gold-500 transition-colors">
+                                <i class="fas fa-cloud-upload-alt mr-2 text-xl"></i> Upload Banner Image
+                            </label>
+                            <input type="file" id="banner-img" accept="image/*" class="hidden" onchange="document.getElementById('b-file-name').innerText = this.files[0].name" required>
+                            <p id="b-file-name" class="text-[10px] text-gold-500 text-center"></p>
+                            <button type="submit" class="w-full bg-gold-500 text-luxury-900 font-bold py-3 rounded-lg uppercase text-xs tracking-widest transition-colors hover:bg-gold-400">Publish to Website</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- List of Active Banners -->
+                <div class="bg-luxury-900 border border-slate-700 rounded-xl overflow-hidden">
+                    <table class="w-full text-left text-sm text-slate-300">
+                        <thead class="bg-luxury-950 text-[10px] uppercase font-black text-slate-500">
+                            <tr><th class="p-4">Banner Preview</th><th class="p-4">Title & Info</th><th class="p-4">Status</th><th class="p-4 text-right">Action</th></tr>
+                        </thead>
+                        <tbody id="banners-table" class="divide-y divide-slate-800">
+                            <!-- Populated via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- VIEW: ANALYTICS (16) -->
+            <div id="admin-view-analytics" class="admin-view-section hidden">
+                <h2 class="text-3xl font-display font-black uppercase mb-8 text-white">Reports & Analytics</h2>
+                <div class="bg-luxury-800 p-8 rounded-2xl border border-slate-700 flex justify-between items-center">
+                    <div>
+                        <h4 class="font-bold uppercase text-lg text-white mb-1">Export Database</h4>
+                        <p class="text-slate-400 text-xs">Download all customer B2B orders and inquiries in Excel format.</p>
+                    </div>
+                    <button onclick="downloadExcelReport()" class="bg-green-600 hover:bg-green-500 text-white px-8 py-4 rounded-xl font-bold uppercase tracking-widest text-xs transition-colors flex items-center gap-2 shadow-lg">
+                        <i class="fas fa-file-excel text-lg"></i> Download .CSV
+                    </button>
+                </div>
+            </div>
+
+            <!-- VIEW: SECURITY (17) -->
+            <div id="admin-view-security" class="admin-view-section hidden">
+                <h2 class="text-3xl font-display font-black uppercase mb-8 text-white">Admin & Security</h2>
+                <div class="bg-luxury-800 p-10 text-center rounded-2xl border border-slate-700">
+                    <i class="fas fa-lock text-5xl text-gold-500 mb-4"></i>
+                    <h3 class="text-xl font-bold text-white uppercase tracking-widest">Security Gateway</h3>
+                    <p class="text-slate-400 text-sm mt-2">Manage Admin Passwords, 2FA, and Audit Logs here.</p>
+                </div>
+            </div>
+            
+        </main>
+    </div>
+
+    <!-- MAIN LOGIC (NO DUMMY DATA) -->
+    <script>
+        // Database Initialization
+        let appData = JSON.parse(localStorage.getItem('aerozipFinalDB2')) || {
+            products: [], b2bOrders: [], sellerUploads: [], bulkInquiries: [], sampleReqs: [], discount: 0, wishlist: [], banners: []
+        };
+        let cart = [];
+
+        // Policy Content Data
+        const policyData = {
+            'about': `
+                <h4 class="text-lg font-bold text-luxury-900 mb-2">Our Story</h4>
+                <p class="mb-4">For 15 years, we operated as a trusted offline trading partner, deeply understanding the luggage and travel accessories market. In 2026, we evolved from offline trading to digital manufacturing and B2B distribution under the banner of Pranavi Makers, launching our flagship brand: Aerozip Industries.</p>
+                <h4 class="text-lg font-bold text-luxury-900 mb-2 mt-6">Why Choose Us</h4>
+                <ul class="list-disc pl-5 space-y-2">
+                    <li>15 Years of Expertise: Deep market knowledge transitioning into premium manufacturing.</li>
+                    <li>B2B Focused: We cater strictly to bulk orders, ensuring consistency and scale.</li>
+                    <li>Nashik Manufacturing Hub: Proudly made in Ambad MIDC, India.</li>
+                </ul>
+            `,
+            'shipping': `
+                <h4 class="text-lg font-bold text-luxury-900 mb-2">Shipping Logistics</h4>
+                <p class="mb-4">The customer is primarily responsible for arranging their own shipping container or transport vehicle for bulk orders.</p>
+                <h4 class="text-lg font-bold text-luxury-900 mb-2 mt-6">Assistance</h4>
+                <p>If requested, Aerozip Industries can assist in finding a suitable transport vehicle (Gadi) for delivery. However, the transport cost will be borne entirely by the customer.</p>
+            `,
+            'refund': `
+                <h4 class="text-lg font-bold text-luxury-900 mb-2">B2B Return & Refund Policy</h4>
+                <p class="mb-4">As a B2B and wholesale platform, Aerozip Industries maintains a strict <strong>No Refund Policy</strong> under normal circumstances.</p>
+                <h4 class="text-lg font-bold text-luxury-900 mb-2 mt-6">Exceptions (Damage/Defects)</h4>
+                <p>Returns or replacements are strictly considered <em>only</em> if the goods are found to be damaged or defective at the time of delivery. You must inspect the goods and report any damage with photographic evidence <em>before</em> taking final delivery of the consignment. Once accepted, no return claims will be entertained.</p>
+            `,
+            'seller': `
+                <h4 class="text-lg font-bold text-luxury-900 mb-2">Seller Guidelines</h4>
+                <p class="mb-4">Aerozip invites sellers to list new, premium travel accessories on our platform.</p>
+                <ul class="list-disc pl-5 space-y-2">
+                    <li><strong>Verification:</strong> All seller accounts and uploaded accessories are subject to manual verification by Aerozip Admin before they go live on the catalog.</li>
+                    <li><strong>Commission:</strong> Standard platform commission applies on all successful sales generated through the Aerozip B2B Portal.</li>
+                </ul>
+            `,
+            'terms': `<p>By using the Aerozip Industries B2B portal, you agree to our corporate terms of service. All transactions are B2B focused and require a valid GSTIN for invoicing.</p>`,
+            'privacy': `<p>We respect your privacy. All corporate data, GST information, and contact details are securely stored in our encrypted database and are never shared with third parties without explicit consent.</p>`
+        };
+
+        document.addEventListener('DOMContentLoaded', () => { 
+            renderCatalog(appData.products); 
+            renderCustomerOrders();
+            updateDropdowns();
+            renderFrontendBanners();
+        });
+
+        function saveData() { localStorage.setItem('aerozipFinalDB2', JSON.stringify(appData)); }
+
+        // --- UI Modals & Policy Popups ---
+        function openModal(id) { document.getElementById(id).classList.add('active'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+        function openPolicy(key) {
+            const titles = {
+                'about': 'Our Story & About Us', 'shipping': 'Shipping & Delivery', 'refund': 'Return & Refund Policy',
+                'seller': 'Seller Guidelines', 'terms': 'Terms & Conditions', 'privacy': 'Privacy Policy'
+            };
+            document.getElementById('policy-title').innerText = titles[key];
+            document.getElementById('policy-content').innerHTML = policyData[key];
+            openModal('policy-modal');
+        }
+
+        // --- Auth Login Flow ---
+        function loginAsBuyer() {
+            closeModal('login-modal');
+            openModal('buyer-dashboard-modal');
+            renderCustomerOrders();
+            renderWishlist();
+        }
+        function loginAsSeller() {
+            closeModal('login-modal');
+            openModal('seller-dashboard-modal');
+        }
+
+        function switchBuyerTab(tab) {
+            document.querySelectorAll('.buyer-tab').forEach(b => {
+                b.classList.remove('text-gold-600', 'border-gold-500');
+                b.classList.add('text-slate-400', 'border-transparent');
+            });
+            document.getElementById('btab-' + tab).classList.add('text-gold-600', 'border-gold-500');
+            document.getElementById('btab-' + tab).classList.remove('text-slate-400', 'border-transparent');
+            document.querySelectorAll('.buyer-view').forEach(v => v.classList.add('hidden'));
+            document.getElementById('buyer-view-' + tab).classList.remove('hidden');
+        }
+
+        // --- Catalog, Wishlist & Cart ---
+        function renderCatalog(items) {
+            const grid = document.getElementById('catalog-grid');
+            if(items.length === 0) {
+                grid.innerHTML = `<div class="col-span-full text-center py-20 text-slate-400 font-bold uppercase tracking-widest text-sm border-2 border-dashed border-slate-200 rounded-3xl">Catalog Empty. Awaiting Factory / Seller Stock.</div>`;
+                return;
+            }
+            const discount = parseInt(appData.discount);
+            grid.innerHTML = items.map(p => {
+                let priceHTML = `<span class="text-xl font-black text-luxury-900">₹${p.price.toLocaleString('en-IN')}</span>`;
+                if(discount > 0) {
+                    let discountedPrice = p.price - (p.price * (discount / 100));
+                    priceHTML = `
+                        <div class="flex items-center gap-2">
+                            <span class="text-sm font-bold text-slate-400 line-through">₹${p.price.toLocaleString('en-IN')}</span>
+                            <span class="text-xl font-black text-gold-600">₹${discountedPrice.toLocaleString('en-IN')}</span>
+                        </div>
+                        <span class="absolute top-4 left-4 bg-gold-500 text-white text-[10px] font-black px-2 py-1 rounded shadow-md uppercase">-${discount}% OFF</span>
+                    `;
+                }
+                const inWishlist = appData.wishlist.includes(p.id);
+                const heartColor = inWishlist ? 'text-red-500' : 'text-slate-300 hover:text-red-400';
+
+                return `
+                <div class="product-card p-4 rounded-3xl flex flex-col justify-between relative group">
+                    <button onclick="toggleWishlist(${p.id})" class="absolute top-4 right-4 z-20 text-xl transition-colors ${heartColor}"><i class="fas fa-heart"></i></button>
+                    <div class="bg-luxury-50 rounded-2xl h-64 flex items-center justify-center p-4 mb-4 overflow-hidden relative">
+                        <img src="${p.image}" class="max-h-full mix-blend-multiply group-hover:scale-110 transition-transform">
+                    </div>
+                    <span class="text-slate-400 text-[10px] font-black uppercase tracking-widest">${p.source || 'Aerozip Factory'}</span>
+                    <h3 class="text-lg font-bold text-luxury-900 mb-2 truncate">${p.name}</h3>
+                    <div class="flex items-center justify-between mt-auto border-t pt-4">
+                        ${priceHTML}
+                        <button onclick="addToCart(${p.id})" class="bg-luxury-900 text-white px-4 py-2 text-xs font-bold uppercase rounded-lg hover:bg-gold-500 transition-colors">Add</button>
+                    </div>
+                </div>
+            `}).join('');
+        }
+
+        function filterCatalog(category, btn) {
+            document.querySelectorAll('.filter-btn').forEach(b => { b.classList.remove('text-gold-600', 'border-gold-500'); b.classList.add('text-slate-400', 'border-transparent'); });
+            btn.classList.add('text-gold-600', 'border-gold-500'); btn.classList.remove('text-slate-400', 'border-transparent');
+            if(category === 'all') renderCatalog(appData.products);
+            else renderCatalog(appData.products.filter(p => p.category === category));
+        }
+
+        function toggleWishlist(id) {
+            const index = appData.wishlist.indexOf(id);
+            if(index > -1) { appData.wishlist.splice(index, 1); showToast("Removed from wishlist"); }
+            else { appData.wishlist.push(id); showToast("Added to wishlist ❤️"); }
+            saveData(); renderCatalog(appData.products); renderWishlist();
+        }
+
+        function renderWishlist() {
+            const grid = document.getElementById('buyer-wishlist-grid');
+            if(!grid) return;
+            const wItems = appData.products.filter(p => appData.wishlist.includes(p.id));
+            if(wItems.length === 0) {
+                grid.innerHTML = '<div class="col-span-full text-center text-slate-400 text-xs font-bold uppercase mt-10">Wishlist is empty</div>';
+                return;
+            }
+            grid.innerHTML = wItems.map(p => `
+                <div class="border border-slate-200 rounded-2xl p-4 relative">
+                    <button onclick="toggleWishlist(${p.id})" class="absolute top-2 right-2 text-red-500"><i class="fas fa-times"></i></button>
+                    <img src="${p.image}" class="h-32 w-full object-contain mix-blend-multiply mb-2">
+                    <h4 class="text-sm font-bold text-luxury-900 truncate">${p.name}</h4>
+                    <p class="text-xs font-black text-gold-600 mb-2">₹${p.price}</p>
+                    <button onclick="addToCart(${p.id})" class="w-full bg-luxury-900 text-white text-[10px] py-2 uppercase font-bold rounded">Move to Cart</button>
+                </div>
+            `).join('');
+        }
+
+        function addToCart(id) {
+            const product = appData.products.find(p => p.id === id);
+            let finalPrice = product.price;
+            if(appData.discount > 0) finalPrice = product.price - (product.price * (appData.discount / 100));
+            cart.push({...product, cartPrice: finalPrice});
+            updateCartUI(); showToast("Added to B2B Request!");
+        }
+
+        function updateCartUI() {
+            document.getElementById('cart-count').innerText = cart.length;
+            const container = document.getElementById('cart-items');
+            let total = 0;
+            if(cart.length === 0) {
+                container.innerHTML = `<div class="text-center text-slate-400 mt-10 font-bold uppercase text-xs">No items selected</div>`;
+            } else {
+                container.innerHTML = cart.map((item, i) => {
+                    total += item.cartPrice;
+                    return `
+                    <div class="flex gap-4 items-center bg-white p-3 rounded-xl border border-slate-200 mb-2">
+                        <img src="${item.image}" class="w-12 h-12 object-contain mix-blend-multiply">
+                        <div class="flex-1">
+                            <h4 class="text-xs font-bold text-luxury-900 truncate">${item.name}</h4>
+                            <p class="text-xs font-black text-gold-600">₹${item.cartPrice.toLocaleString('en-IN')}</p>
+                        </div>
+                        <button onclick="cart.splice(${i},1); updateCartUI()" class="text-slate-400 hover:text-red-500"><i class="fas fa-trash"></i></button>
+                    </div>`;
+                }).join('');
+            }
+            document.getElementById('cart-total').innerText = `₹${total.toLocaleString('en-IN')}`;
+        }
+
+        function submitB2BOrder(e) {
+            e.preventDefault();
+            if(cart.length === 0) return showToast("Cart is empty!");
+            appData.b2bOrders.push({
+                id: 'ORD-' + Math.floor(1000+Math.random()*9000), 
+                company: document.getElementById('b2b-company').value, 
+                gst: document.getElementById('b2b-gst').value, 
+                date: new Date().toLocaleDateString(), items: cart.length, 
+                total: document.getElementById('cart-total').innerText, status: 'Pending Admin Review'
+            });
+            saveData(); cart = []; updateCartUI(); closeModal('cart-modal');
+            showToast("Order Request Sent! Check Client Portal.");
+        }
+
+        // --- Sample Request ---
+        function submitSampleRequest(e) {
+            e.preventDefault();
+            const selectEl = document.getElementById('sample-product');
+            if(selectEl.value === "") return showToast("Select a product!");
+            appData.sampleReqs.push({
+                date: new Date().toLocaleDateString(), name: document.getElementById('sample-name').value,
+                product: selectEl.options[selectEl.selectedIndex].text, address: document.getElementById('sample-address').value,
+                status: 'Under Review'
+            });
+            saveData(); closeModal('sample-modal');
+            showToast("Sample Request Sent! Our team will contact you.");
+        }
+
+        // --- Dynamic Calculators / Dropdowns ---
+        function updateDropdowns() {
+            const b2bSelect = document.getElementById('calc-type');
+            const sampleSelect = document.getElementById('sample-product');
+            if (appData.products.length === 0) {
+                b2bSelect.innerHTML = '<option value="0">No products available</option>';
+                sampleSelect.innerHTML = '<option value="">No products available</option>';
+                document.getElementById('calc-price').innerText = "₹0";
+                return;
+            }
+            const opts = appData.products.map(p => `<option value="${p.price}">${p.name} (Base ₹${p.price.toLocaleString('en-IN')})</option>`).join('');
+            b2bSelect.innerHTML = '<option value="0">-- Select Product --</option>' + opts;
+            sampleSelect.innerHTML = '<option value="">-- Select Product --</option>' + opts;
+            calculateBulkPrice();
+        }
+
+        function calculateBulkPrice() {
+            const basePrice = parseInt(document.getElementById('calc-type').value);
+            const qty = parseInt(document.getElementById('calc-qty').value) || 0;
+            if (basePrice === 0 || isNaN(basePrice)) {
+                document.getElementById('calc-price').innerText = "₹0"; document.getElementById('calc-discount-label').classList.add('hidden'); return;
+            }
+            let total = basePrice * qty; let discountPercent = qty >= 100 ? 0.45 : qty >= 50 ? 0.30 : qty >= 10 ? 0.15 : 0;
+            document.getElementById('calc-price').innerText = "₹" + (total - (total * discountPercent)).toLocaleString('en-IN');
+            const label = document.getElementById('calc-discount-label');
+            if(discountPercent > 0) { label.innerText = `-${discountPercent * 100}% Applied`; label.classList.remove('hidden'); } else { label.classList.add('hidden'); }
+        }
+
+        function submitBulkCalculator(e) {
+            e.preventDefault();
+            const selectEl = document.getElementById('calc-type');
+            if (selectEl.value === "0") return showToast("Select a product!");
+            appData.bulkInquiries.push({ 
+                date: new Date().toLocaleDateString(), name: document.getElementById('calc-name').value, 
+                product: selectEl.options[selectEl.selectedIndex].text, quantity: document.getElementById('calc-qty').value, 
+                estimated_value: document.getElementById('calc-price').innerText 
+            });
+            saveData(); document.getElementById('calc-name').value = ''; document.getElementById('calc-qty').value = '10';
+            showToast("B2B Inquiry Sent & Recorded in Admin!");
+        }
+
+        // --- Customer Portal Render ---
+        function renderCustomerOrders() {
+            const tbody = document.getElementById('customer-orders-list');
+            if(!tbody) return;
+            if(appData.b2bOrders.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="p-6 text-center text-xs font-bold text-slate-400 uppercase">No B2B orders yet.</td></tr>';
+                return;
+            }
+            tbody.innerHTML = appData.b2bOrders.map(o => `
+                <tr>
+                    <td class="p-4 font-black text-luxury-900">${o.id}</td>
+                    <td class="p-4 text-slate-500">${o.date}</td>
+                    <td class="p-4 font-bold">${o.total}</td>
+                    <td class="p-4"><span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded text-[10px] uppercase font-bold">${o.status}</span></td>
+                    <td class="p-4"><button class="text-gold-500 hover:text-luxury-900 text-xs font-bold uppercase"><i class="fas fa-download"></i> Proforma</button></td>
+                </tr>
+            `).join('');
+        }
+
+        // --- Seller Portal ---
+        function submitSellerProduct(e) {
+            e.preventDefault();
+            const name = document.getElementById('sell-name').value; const price = document.getElementById('sell-price').value;
+            const qty = document.getElementById('sell-qty').value; const fileInput = document.getElementById('sell-img');
+            if(!fileInput.files[0]) return showToast("Select Image!");
+
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                appData.sellerUploads.push({ id: Date.now(), name: name, price: parseInt(price), qty: qty, image: ev.target.result, status: 'Pending Approval' });
+                saveData(); closeModal('seller-dashboard-modal'); showToast("Accessory sent to Admin for review.");
+            };
+            reader.readAsDataURL(fileInput.files[0]);
+        }
+
+        // --- Admin Security ---
+        let clickCount = 0; let clickTimer;
+        function adminSecretAccess() {
+            clickCount++; clearTimeout(clickTimer);
+            if(clickCount === 3) { openModal('auth-modal'); clickCount = 0; } else { clickTimer = setTimeout(() => { clickCount = 0; }, 1000); }
+        }
+        function verifyPassword() {
+            if(document.getElementById('admin-password').value === 'admin123') {
+                closeModal('auth-modal'); document.getElementById('frontend-container').classList.add('hidden');
+                document.getElementById('full-admin-panel').classList.remove('hidden');
+                loadAdminData(); showToast("Admin Controls Unlocked.");
+            } else { showToast("Wrong Password!"); }
+        }
+        function exitAdmin() { document.getElementById('full-admin-panel').classList.add('hidden'); document.getElementById('frontend-container').classList.remove('hidden'); }
+        function switchAdminTab(tab) {
+            document.querySelectorAll('.admin-nav-btn').forEach(b => { b.classList.remove('bg-gold-500', 'text-luxury-900'); b.classList.add('text-slate-400'); });
+            document.querySelector(`.admin-nav-btn[data-target="${tab}"]`).classList.add('bg-gold-500', 'text-luxury-900');
+            document.querySelectorAll('.admin-view-section').forEach(v => v.classList.add('hidden'));
+            document.getElementById('admin-view-' + tab).classList.remove('hidden');
+        }
+
+        // --- Admin Logic ---
+        function loadAdminData() {
+            document.getElementById('dash-orders').innerText = appData.b2bOrders.length;
+            document.getElementById('dash-sellers').innerText = appData.sellerUploads.length;
+            document.getElementById('dash-products').innerText = appData.products.length;
+            document.getElementById('dash-samples').innerText = appData.sampleReqs.length;
+            if(document.getElementById('admin-discount')) document.getElementById('admin-discount').value = appData.discount || 0;
+            
+            let totalRev = 0;
+            appData.b2bOrders.forEach(o => totalRev += parseInt(o.total.replace(/[^0-9]/g, '')));
+            document.getElementById('dash-sales').innerText = `₹${totalRev.toLocaleString('en-IN')}`;
+
+            renderAdminProducts();
+            renderAdminBanners();
+
+            const oBody = document.getElementById('admin-orders-table');
+            if(oBody) oBody.innerHTML = appData.b2bOrders.length === 0 ? '<tr><td colspan="4" class="p-4 text-center text-xs">No orders yet.</td></tr>' : appData.b2bOrders.map(o => `
+                <tr>
+                    <td class="p-4 font-black text-white">${o.id}</td><td class="p-4 text-slate-300">${o.company} <br><span class="text-[10px] text-slate-500">GST: ${o.gst}</span></td>
+                    <td class="p-4 text-gold-400 font-bold">${o.total}</td>
+                    <td class="p-4"><select onchange="updateOrderStatus('${o.id}', this.value)" class="bg-luxury-900 border border-slate-600 text-xs p-2 rounded text-white outline-none">
+                        <option value="Pending Admin Review" ${o.status==='Pending Admin Review'?'selected':''}>Pending</option><option value="Route to Factory" ${o.status==='Route to Factory'?'selected':''}>Route to Factory</option><option value="Invoice Generated" ${o.status==='Invoice Generated'?'selected':''}>Generate Invoice</option></select></td>
+                </tr>`).join('');
+
+            const smpBody = document.getElementById('admin-samples-table');
+            if(smpBody) smpBody.innerHTML = appData.sampleReqs.length === 0 ? '<tr><td colspan="4" class="p-4 text-center text-xs">No sample requests.</td></tr>' : appData.sampleReqs.map(s => `
+                <tr>
+                    <td class="p-4 text-white text-xs">${s.date}</td><td class="p-4 text-slate-300">${s.name} <br><span class="text-[10px] text-slate-500">${s.address}</span></td>
+                    <td class="p-4 text-gold-400 font-bold text-xs">${s.product}</td><td class="p-4 text-yellow-500 text-xs font-bold">${s.status}</td>
+                </tr>`).join('');
+
+            const sBody = document.getElementById('admin-seller-table');
+            if(sBody) sBody.innerHTML = appData.sellerUploads.length === 0 ? '<tr><td colspan="4" class="p-4 text-center text-xs">No pending items.</td></tr>' : appData.sellerUploads.map(s => `
+                <tr>
+                    <td class="p-4 flex gap-3 items-center text-white"><img src="${s.image}" class="w-10 h-10 rounded object-cover bg-white"> ${s.name}</td>
+                    <td class="p-4 text-slate-300">₹${s.price} <br><span class="text-[10px]">Qty: ${s.qty}</span></td><td class="p-4 text-yellow-500 text-xs font-bold">${s.status}</td>
+                    <td class="p-4 text-right"><button onclick="approveSellerProduct(${s.id})" class="bg-green-600 px-3 py-1 rounded text-[10px] font-bold uppercase text-white hover:bg-green-500 mr-2">Approve</button><button onclick="rejectSellerProduct(${s.id})" class="bg-red-600 px-3 py-1 rounded text-[10px] font-bold uppercase text-white hover:bg-red-500">Reject</button></td>
+                </tr>`).join('');
+        }
+
+        function adminAddProduct() {
+            const name = document.getElementById('admin-p-name').value; const price = document.getElementById('admin-p-price').value;
+            const fileInput = document.getElementById('admin-p-img-file'); const cat = document.getElementById('admin-p-cat').value;
+            if(!name || !price || !fileInput.files[0]) return showToast("Fill all details!");
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                appData.products.unshift({ id: Date.now(), name: name, price: parseInt(price), image: e.target.result, source: 'Aerozip Factory', category: cat });
+                saveData(); renderCatalog(appData.products); updateDropdowns(); loadAdminData();
+                document.getElementById('admin-p-name').value = ''; document.getElementById('admin-p-price').value = '';
+                showToast("Factory Product Added!");
+            }; reader.readAsDataURL(fileInput.files[0]);
+        }
+
+        function renderAdminProducts() {
+            const tbody = document.getElementById('admin-product-list-tbody');
+            if(!tbody) return;
+            if(appData.products.length === 0) { tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-xs">No products in catalog.</td></tr>'; return; }
+            tbody.innerHTML = appData.products.map(p => `<tr><td class="p-4 text-white">${p.name}</td><td class="p-4 text-slate-300">₹${p.price.toLocaleString('en-IN')}</td><td class="p-4 text-slate-400 text-xs">${p.source || 'Factory'}</td><td class="p-4 text-right"><button onclick="deleteProduct(${p.id})" class="text-red-400 hover:text-red-500"><i class="fas fa-trash"></i></button></td></tr>`).join('');
+        }
+
+        function deleteProduct(id) {
+            if(confirm("Delete this product?")) { appData.products = appData.products.filter(p => p.id !== id); saveData(); renderCatalog(appData.products); updateDropdowns(); loadAdminData(); }
+        }
+
+        function updateOrderStatus(id, newStatus) {
+            const order = appData.b2bOrders.find(o => o.id === id);
+            if(order) { order.status = newStatus; saveData(); renderCustomerOrders(); showToast("Order Routed!"); }
+        }
+
+        function approveSellerProduct(id) {
+            const itemIndex = appData.sellerUploads.findIndex(s => s.id === id);
+            if(itemIndex > -1) {
+                const item = appData.sellerUploads[itemIndex];
+                appData.products.unshift({ id: item.id, name: item.name, price: item.price, image: item.image, source: 'Verified Seller', category: 'accessories' });
+                appData.sellerUploads.splice(itemIndex, 1); saveData(); renderCatalog(appData.products); updateDropdowns(); loadAdminData(); showToast("Accessory Listed!");
+            }
+        }
+        function rejectSellerProduct(id) { appData.sellerUploads = appData.sellerUploads.filter(s => s.id !== id); saveData(); loadAdminData(); showToast("Request Rejected."); }
+
+        function applyGlobalDiscount() { appData.discount = parseInt(document.getElementById('admin-discount').value) || 0; saveData(); renderCatalog(appData.products); showToast("Discount Applied Live!"); }
+
+        function downloadExcelReport() {
+            let csv = "data:text/csv;charset=utf-8,Type,Date,Client/Product,Value\n";
+            appData.b2bOrders.forEach(o => csv += `Order,${o.date},${o.company} (GST: ${o.gst}),${o.total.replace('₹','')}\n`);
+            appData.bulkInquiries.forEach(b => csv += `Inquiry,${b.date},${b.name} (${b.product}),${b.estimated_value.replace('₹','')}\n`);
+            const link = document.createElement("a"); link.setAttribute("href", encodeURI(csv)); link.setAttribute("download", "Aerozip_B2B_Report.csv");
+            document.body.appendChild(link); link.click(); document.body.removeChild(link);
+        }
+
+        // --- CMS BANNERS MODULE LOGIC ---
+        function addPromoBanner(e) {
+            e.preventDefault();
+            const title = document.getElementById('banner-title').value;
+            const sub = document.getElementById('banner-sub').value;
+            const file = document.getElementById('banner-img').files[0];
+            
+            if(!appData.banners) appData.banners = [];
+
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                appData.banners.unshift({
+                    id: Date.now(), title: title, subtitle: sub, image: ev.target.result, status: 'Live on Website'
+                });
+                saveData();
+                renderAdminBanners();
+                renderFrontendBanners();
+                
+                document.getElementById('banner-title').value = '';
+                document.getElementById('banner-sub').value = '';
+                document.getElementById('b-file-name').innerText = '';
+                document.getElementById('banner-img').value = '';
+                
+                showToast("Banner Published to Website!");
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function renderAdminBanners() {
+            if(!appData.banners) appData.banners = [];
+            const tbody = document.getElementById('banners-table');
+            if(!tbody) return;
+            if(appData.banners.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" class="p-8 text-center text-slate-500 font-bold uppercase text-xs">No active banners.</td></tr>';
+                return;
+            }
+            tbody.innerHTML = appData.banners.map(b => `
+                <tr class="hover:bg-luxury-800/50">
+                    <td class="p-4"><img src="${b.image}" class="w-24 h-12 object-cover rounded border border-slate-600"></td>
+                    <td class="p-4"><p class="font-bold text-white">${b.title}</p><p class="text-[10px] text-slate-400">${b.subtitle}</p></td>
+                    <td class="p-4"><span class="bg-green-500/10 text-green-400 border border-green-500/20 px-2 py-1 rounded text-[10px] font-bold uppercase">${b.status}</span></td>
+                    <td class="p-4 text-right"><button onclick="deleteBanner(${b.id})" class="text-red-400 hover:text-red-500"><i class="fas fa-trash"></i></button></td>
+                </tr>
+            `).join('');
+        }
+
+        function deleteBanner(id) {
+            if(confirm("Remove this banner from the website?")) {
+                appData.banners = appData.banners.filter(b => b.id !== id);
+                saveData();
+                renderAdminBanners();
+                renderFrontendBanners();
+                showToast("Banner Removed!");
+            }
+        }
+
+        function renderFrontendBanners() {
+            const section = document.getElementById('dynamic-banners-section');
+            const container = document.getElementById('frontend-banners-container');
+            if(!section || !container) return;
+            
+            if(!appData.banners || appData.banners.length === 0) {
+                section.classList.add('hidden');
+                return;
+            }
+            section.classList.remove('hidden');
+            container.innerHTML = appData.banners.map(b => `
+                <div class="relative rounded-3xl overflow-hidden shadow-2xl group min-h-[250px] flex items-center">
+                    <div class="absolute inset-0 bg-black/40 z-10 group-hover:bg-black/50 transition-colors"></div>
+                    <img src="${b.image}" class="absolute inset-0 w-full h-full object-cover z-0">
+                    <div class="relative z-20 p-8 text-white">
+                        <span class="bg-gold-500 text-luxury-900 font-black uppercase text-[10px] px-3 py-1 rounded-full mb-4 inline-block">Corporate Customization</span>
+                        <h3 class="text-3xl font-display font-black leading-tight mb-2">${b.title}</h3>
+                        <p class="text-sm font-medium opacity-90">${b.subtitle}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast'); document.getElementById('toast-msg').innerText = msg;
+            t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000);
+        }
+        function toggleSearch() { showToast('Search activated'); }
+    </script>
+</body>
+</html>

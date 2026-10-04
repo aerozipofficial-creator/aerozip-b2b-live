@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aerozip Master Admin | OS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- 🔥 Firebase Cloud SDKs ॲड केले आहेत 🔥 -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { luxury: { 800: '#1e293b', 900: '#0f172a', 950: '#020617' }, gold: { 400: '#eab308', 500: '#d97706' } },
+                    fontFamily: { sans: ['Outfit', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #0f172a; color: #f8fafc; overflow: hidden; }
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        .tab-content { display: none; animation: fadeIn 0.3s ease-in-out; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .glass-box { background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 1rem; backdrop-filter: blur(10px); }
+    </style>
+</head>
+<body class="flex h-screen w-full antialiased">
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed top-5 right-5 z-[9999] bg-gold-500 text-luxury-950 px-6 py-3 rounded-lg font-bold shadow-2xl transform translate-x-[150%] transition-transform flex items-center gap-3">
+        <i class="fas fa-check-circle"></i> <span id="toast-msg">Action Successful!</span>
+    </div>
+
+    <!-- SIDEBAR -->
+    <aside class="w-72 bg-luxury-950 border-r border-slate-800 flex flex-col h-full shadow-2xl z-20">
+        <!-- Brand -->
+        <div class="p-6 border-b border-slate-800 flex items-center gap-4">
+            <div class="w-10 h-10 bg-gradient-to-br from-gold-400 to-gold-600 rounded-xl flex items-center justify-center text-luxury-950 text-xl font-black shadow-lg"><i class="fas fa-shield-alt"></i></div>
+            <div>
+                <h1 class="font-black text-white uppercase tracking-widest leading-none">Aerozip OS</h1>
+                <span class="text-[9px] text-gold-500 uppercase tracking-[0.2em] font-bold">Master Control Panel</span>
+            </div>
+        </div>
+
+        <!-- Scrollable Navigation -->
+        <div class="flex-1 overflow-y-auto p-4 space-y-6">
+            
+            <!-- Group: Overview -->
+            <div>
+                <p class="text-[10px] text-slate-500 uppercase tracking-widest font-black mb-2 ml-3">Overview</p>
+                <button onclick="openTab('dashboard', this)" class="nav-btn w-full flex items-center gap-3 text-left px-4 py-2.5 rounded-lg text-sm font-bold text-white bg-luxury-800 transition-all"><i class="fas fa-chart-pie w-5 text-gold-500"></i> Dashboard</button>
+                <button onclick="openTab('analytics', this)" class="nav-btn w-full flex items-center gap-3 text-left px-4 py-2.5 rounded-lg text-sm font-bold text-slate-400 hover:bg-luxury-800 transition-all"><i class="fas fa-chart-line w-5 text-gold-500"></i> Reports & Analytics</button>
+            </div>
+
+            <!-- Group: Catalog -->
+            <div>
+                <p class="text-[10px] text-slate-500 uppercase tracking-widest font-black mb-2 ml-3">Inventory & Catalog</p>
+                <button onclick="openTab('products', this)" class="nav-btn w-full flex items-center gap-3 text-left px-4 py-2.5 rounded-lg text-sm font-bold text-slate-400 hover:bg-luxury-800 transition-all"><i class="fas fa-suitcase-rolling w-5 text-blue-400"></i> Products / Bags</button>
+                <button onclick="openTab('accessories', this)" class="nav-btn w-full flex items-center gap-3 text-left px-4 py-2.5 rounded-lg text-sm font-bold text-slate-400 hover:bg-luxury-800 transition-all"><i class="fas fa-key w-5 text-blue-400"></i> Accessories</button>
+                <button onclick="openTab('categories', this)" class="nav-btn w-full flex items-center gap-3 text-left px-4 py-2.5 rounded-lg text-sm font-bold text-slate-400 hover:bg-luxury-800 transition-all"><i class="fas fa-tags w-5 text-blue-400"></i> Categories & Brands</button>
+            </div>
+
+            <!-- Group: Sales & Ops -->
+            <div>
+                <p class="text-[10px] text-slate-500 uppercase tracking-widest font-black mb-2 ml-3">Sales & Operations</p>
+                <button onclick="openTab('orders', this)" class="nav-btn w-full flex items-center gap-3 text-left px-4 py-2.5 rounded-lg text-sm font-bold text-slate-400 hover:bg-luxury-800 transition-all"><i class="fas fa-box-open w-5 text-green-400"></i> Orders & Invoices</button>
+                <button onclick="openTab('delivery', this)" class="nav-btn w-full flex items-center gap-3 text-left px-4 py-2.5 rounded-lg text-sm font-bold text-slate-400 hover:bg-luxury-800 transition-all"><i class="fas fa-truck w-5 text-green-400"></i> Delivery & Shipping</button>
+                <button onclick="openTab('buysell', this)" class="nav-btn w-full flex items-center gap-3 text-left px-4 py-2.5 rounded-lg text-sm font-bold text-slate-400 hover:bg-luxury-800 transition-all"><i class="fas fa-recycle w-5 text-green-400"></i> Buy/Sell Market</button>
+            </div>
+
+            <!-- Group: Users -->
+            <div>
+                <p class="text-[10px] text-slate-500 uppercase tracking-widest font-black mb-2 ml-3">User Management</p>
+                <button onclick="openTab('customers', this)" class="nav-btn w-full flex items-center gap-3 text-left px-4 py-2.5 rounded-lg text-sm font-bold text-slate-400 hover:bg-luxury-800 transition-all"><i class="fas fa-users w-5 text-purple-400"></i> Customers</button>
+                <button onclick="openTab('sellers', this)" class="nav-btn w-full flex items-center gap-3 text-left px-4 py-2.5 rounded-lg text-sm font-bold text-slate-400 hover:bg-luxury-800 transition-all"><i class="fas fa-store w-5 text-purple-400"></i> Sellers & KYC</button>
+                <button onclick="openTab('reviews', this)" class="nav-btn w-full flex items-center gap-3 text-left px-4 py-2.5 rounded-lg text-sm font-bold text-slate-400 hover:bg-luxury-800 transition-all"><i class="fas fa-star w-5 text-purple-400"></i> Reviews & Ratings</button>
+            </div>
+
+            <!-- Group: Finance & Marketing -->
+            <div>
+                <p class="text-[10px] text-slate-500 uppercase tracking-widest font-black mb-2 ml-3">Finance & Marketing</p>
+                <button onclick="openTab('finance', this)" class="nav-btn w-full flex items-center gap-3 text-left px-4 py-2.5 rounded-lg text-sm font-bold text-slate-400 hover:bg-luxury-800 transition-all"><i class="fas fa-wallet w-5 text-yellow-400"></i> Payments & Finance</button>
+                <button onclick="openTab('coupons', this)" class="nav-btn w-full flex items-center gap-3 text-left px-4 py-2.5 rounded-lg text-sm font-bold text-slate-400 hover:bg-luxury-800 transition-all"><i class="fas fa-ticket-alt w-5 text-yellow-400"></i> Coupons & Offers</button>
+                <button onclick="openTab('notifications', this)" class="nav-btn w-full flex items-center gap-3 text-left px-4 py-2.5 rounded-lg text-sm font-bold text-slate-400 hover:bg-luxury-800 transition-all"><i class="fas fa-bell w-5 text-yellow-400"></i> Notifications System</button>
+            </div>
+
+            <!-- Group: System -->
+            <div>
+                <p class="text-[10px] text-slate-500 uppercase tracking-widest font-black mb-2 ml-3">System & Settings</p>
+                <button onclick="openTab('cms', this)" class="nav-btn w-full flex items-center gap-3 text-left px-4 py-2.5 rounded-lg text-sm font-bold text-slate-400 hover:bg-luxury-800 transition-all"><i class="fas fa-desktop w-5 text-red-400"></i> Website CMS (Banners)</button>
+                <button onclick="openTab('security', this)" class="nav-btn w-full flex items-center gap-3 text-left px-4 py-2.5 rounded-lg text-sm font-bold text-slate-400 hover:bg-luxury-800 transition-all"><i class="fas fa-lock w-5 text-red-400"></i> Admin & Security</button>
+            </div>
+
+        </div>
+
+        <div class="p-4 border-t border-slate-800 bg-luxury-950">
+            <button onclick="alert('Logging out of Master Control...')" class="w-full bg-red-500/10 text-red-400 border border-red-500/20 py-3 rounded-lg font-bold text-xs uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all"><i class="fas fa-power-off mr-2"></i> Lock System</button>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="flex-1 flex flex-col h-screen overflow-hidden bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]">
+        
+        <!-- Topbar -->
+        <header class="h-20 bg-luxury-900/80 backdrop-blur-md border-b border-slate-800 flex items-center justify-between px-8 z-10">
+            <h2 id="page-title" class="text-2xl font-black uppercase tracking-widest text-white">Dashboard</h2>
+            <div class="flex items-center gap-6">
+                <div class="text-right hidden md:block">
+                    <p class="text-sm font-bold text-white">Super Admin</p>
+                    <p class="text-[10px] text-green-400 font-bold tracking-widest"><i class="fas fa-circle text-[8px]"></i> System Online</p>
+                </div>
+                <img src="https://ui-avatars.com/api/?name=Admin&background=d97706&color=fff" class="w-10 h-10 rounded-full border-2 border-gold-500 shadow-[0_0_15px_rgba(217,119,6,0.5)]">
+            </div>
+        </header>
+
+        <!-- Dynamic Views Container -->
+        <div class="flex-1 overflow-y-auto p-8" id="views-container">
+            
+            <!-- 1. DASHBOARD VIEW -->
+            <div id="view-dashboard" class="tab-content active">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="glass-box p-6 border-l-4 border-l-green-500"><p class="text-xs text-slate-400 font-bold uppercase mb-1">Today's Sales</p><h3 class="text-3xl font-black text-white" id="db-sales">₹0</h3></div>
+                    <div class="glass-box p-6 border-l-4 border-l-blue-500"><p class="text-xs text-slate-400 font-bold uppercase mb-1">Total Orders</p><h3 class="text-3xl font-black text-white" id="db-orders">0</h3></div>
+                    <div class="glass-box p-6 border-l-4 border-l-purple-500"><p class="text-xs text-slate-400 font-bold uppercase mb-1">Active Customers</p><h3 class="text-3xl font-black text-white" id="db-customers">0</h3></div>
+                    <div class="glass-box p-6 border-l-4 border-l-gold-500"><p class="text-xs text-slate-400 font-bold uppercase mb-1">Pending Approvals</p><h3 class="text-3xl font-black text-white" id="db-pending">0</h3></div>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="glass-box p-6">
+                        <h4 class="font-bold uppercase text-sm mb-4 border-b border-slate-700 pb-2">Recent Orders</h4>
+                        <table class="w-full text-left text-sm text-slate-300"><tbody id="recent-orders-list"></tbody></table>
+                    </div>
+                    <div class="glass-box p-6">
+                        <h4 class="font-bold uppercase text-sm mb-4 border-b border-slate-700 pb-2">Low Stock Alerts</h4>
+                        <div class="text-center py-10 text-slate-500 text-xs font-bold uppercase"><i class="fas fa-check-circle text-3xl mb-2 text-green-500"></i><br>Inventory is healthy</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. PRODUCTS / BAGS VIEW -->
+            <div id="view-products" class="tab-content">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-bold">Manage Inventory</h3>
+                    <button onclick="toggleElement('add-product-form')" class="bg-gold-500 text-luxury-900 px-4 py-2 rounded font-bold text-xs uppercase"><i class="fas fa-plus"></i> Add New Bag</button>
+                </div>
+                
+                <!-- Add Product Form -->
+                <div id="add-product-form" class="glass-box p-6 mb-8 hidden">
+                    <form onsubmit="addProduct(event)" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="space-y-4">
+                            <input type="text" id="p-name" placeholder="Bag Name" required class="w-full bg-luxury-900 border border-slate-600 p-3 rounded text-sm text-white">
+                            <input type="text" id="p-sku" placeholder="SKU / Product ID" required class="w-full bg-luxury-900 border border-slate-600 p-3 rounded text-sm text-white">
+                            <select id="p-cat" class="w-full bg-luxury-900 border border-slate-600 p-3 rounded text-sm text-white"><option value="Hard Luggage">Hard Luggage</option><option value="Backpack">Backpack</option><option value="Duffle">Duffle</option></select>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="flex gap-4">
+                                <input type="number" id="p-price" placeholder="Original Price" required class="w-full bg-luxury-900 border border-slate-600 p-3 rounded text-sm text-white">
+                                <input type="number" id="p-sale" placeholder="Sale Price" class="w-full bg-luxury-900 border border-slate-600 p-3 rounded text-sm text-white">
+                            </div>
+                            <div class="flex gap-4">
+                                <input type="number" id="p-stock" placeholder="Stock Qty" required class="w-full bg-luxury-900 border border-slate-600 p-3 rounded text-sm text-white">
+                                <input type="text" id="p-color" placeholder="Color" class="w-full bg-luxury-900 border border-slate-600 p-3 rounded text-sm text-white">
+                            </div>
+                            <input type="text" id="p-brand" placeholder="Brand Name" class="w-full bg-luxury-900 border border-slate-600 p-3 rounded text-sm text-white">
+                        </div>
+                        <div class="space-y-4">
+                            <textarea id="p-desc" placeholder="Product Description..." class="w-full bg-luxury-900 border border-slate-600 p-3 rounded text-sm text-white h-[72px]"></textarea>
+                            <input type="file" id="p-img" accept="image/*" class="w-full bg-luxury-900 border border-slate-600 p-2 rounded text-sm text-slate-400">
+                            <button type="submit" class="w-full bg-blue-500 text-white font-bold py-3 rounded uppercase text-xs">Save Product</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="glass-box overflow-hidden">
+                    <table class="w-full text-left text-sm text-slate-300">
+                        <thead class="bg-luxury-900 text-[10px] uppercase font-black text-slate-500 border-b border-slate-700">
+                            <tr><th class="p-4">Image & SKU</th><th class="p-4">Product Name</th><th class="p-4">Price</th><th class="p-4">Stock</th><th class="p-4">Status</th><th class="p-4 text-right">Actions</th></tr>
+                        </thead>
+                        <tbody id="inventory-table" class="divide-y divide-slate-800"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 3. ORDERS VIEW -->
+            <div id="view-orders" class="tab-content">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-bold">Order Management</h3>
+                    <div class="flex gap-2">
+                        <button class="bg-luxury-800 px-4 py-2 rounded text-xs font-bold uppercase">All</button>
+                        <button class="bg-luxury-800 px-4 py-2 rounded text-xs font-bold uppercase text-gold-500">Pending</button>
+                        <button class="bg-luxury-800 px-4 py-2 rounded text-xs font-bold uppercase text-green-500">Delivered</button>
+                    </div>
+                </div>
+                <div class="glass-box overflow-hidden">
+                    <table class="w-full text-left text-sm text-slate-300">
+                        <thead class="bg-luxury-900 text-[10px] uppercase font-black text-slate-500 border-b border-slate-700">
+                            <tr><th class="p-4">Order ID & Date</th><th class="p-4">Customer Info</th><th class="p-4">Total Amount</th><th class="p-4">Payment</th><th class="p-4">Status</th><th class="p-4 text-right">Update Tracking</th></tr>
+                        </thead>
+                        <tbody id="orders-table" class="divide-y divide-slate-800"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 4. CUSTOMERS VIEW -->
+            <div id="view-customers" class="tab-content">
+                <h3 class="text-xl font-bold mb-6">Customer Database (CRM)</h3>
+                <div class="glass-box p-6 text-center text-slate-400 py-20">
+                    <i class="fas fa-users text-5xl mb-4 opacity-50"></i>
+                    <p class="font-bold uppercase tracking-widest text-sm">Customer Database Syncing...</p>
+                    <p class="text-xs mt-2">Registers full profiles, order history, addresses, and wallet balances here.</p>
+                </div>
+            </div>
+
+            <!-- 5. SELLERS VIEW -->
+            <div id="view-sellers" class="tab-content">
+                <h3 class="text-xl font-bold mb-6">Seller KYC & Approvals</h3>
+                <div class="glass-box overflow-hidden">
+                    <table class="w-full text-left text-sm text-slate-300">
+                        <thead class="bg-luxury-900 text-[10px] uppercase font-black text-slate-500 border-b border-slate-700">
+                            <tr><th class="p-4">Seller Info</th><th class="p-4">Documents</th><th class="p-4">Commission Set</th><th class="p-4">KYC Status</th><th class="p-4 text-right">Action</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td colspan="5" class="p-8 text-center">No pending seller registrations.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 6. BUY / SELL MARKETPLACE -->
+            <div id="view-buysell" class="tab-content">
+                <h3 class="text-xl font-bold mb-6">Pre-Loved / Custom Listings Verification</h3>
+                <div class="glass-box p-6 text-center text-slate-400 py-20">
+                    <i class="fas fa-recycle text-5xl mb-4 opacity-50 text-green-500"></i>
+                    <p class="font-bold uppercase tracking-widest text-sm">Marketplace Control Engine</p>
+                    <p class="text-xs mt-2">Approve condition, set admin-approved prices, deduct seller commission, and manage C2C payouts.</p>
+                </div>
+            </div>
+
+            <!-- 7. FINANCE & PAYMENTS -->
+            <div id="view-finance" class="tab-content">
+                <h3 class="text-xl font-bold mb-6">Financial Ledger & Payouts</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="glass-box p-6 border-l-4 border-l-yellow-500"><p class="text-xs text-slate-400 font-bold uppercase mb-1">Platform Commission</p><h3 class="text-3xl font-black text-white">₹0</h3></div>
+                    <div class="glass-box p-6 border-l-4 border-l-red-500"><p class="text-xs text-slate-400 font-bold uppercase mb-1">Pending Seller Payouts</p><h3 class="text-3xl font-black text-white">₹0</h3></div>
+                    <div class="glass-box p-6 border-l-4 border-l-green-500"><p class="text-xs text-slate-400 font-bold uppercase mb-1">GST Collected</p><h3 class="text-3xl font-black text-white">₹0</h3></div>
+                </div>
+                <div class="glass-box p-6"><h4 class="font-bold text-sm mb-4">Recent Transactions</h4><p class="text-xs text-slate-500">No transactions recorded today.</p></div>
+            </div>
+
+            <!-- 8. DELIVERY & SHIPPING -->
+            <div id="view-delivery" class="tab-content">
+                <h3 class="text-xl font-bold mb-6">Logistics & Shipping Zones</h3>
+                <div class="glass-box p-6 text-center text-slate-400 py-20">
+                    <i class="fas fa-truck-loading text-5xl mb-4 opacity-50"></i>
+                    <p class="font-bold uppercase tracking-widest text-sm">Delivery API Ready</p>
+                    <p class="text-xs mt-2">Manage Delivery Partners, Track Shipments, Set COD Availability and Return Pickup scheduling.</p>
+                </div>
+            </div>
+
+            <!-- 9. COUPONS & OFFERS -->
+            <div id="view-coupons" class="tab-content">
+                <h3 class="text-xl font-bold mb-6">Promotions Engine</h3>
+                <div class="glass-box p-8 max-w-xl">
+                    <h4 class="font-bold uppercase text-sm mb-4">Create New Coupon</h4>
+                    <input type="text" placeholder="Coupon Code (e.g., DIWALI50)" class="w-full bg-luxury-900 border border-slate-600 p-3 rounded text-sm text-white mb-4">
+                    <div class="flex gap-4 mb-4">
+                        <select class="w-full bg-luxury-900 border border-slate-600 p-3 rounded text-sm text-white"><option>Percentage (%)</option><option>Flat Amount (₹)</option></select>
+                        <input type="number" placeholder="Discount Value" class="w-full bg-luxury-900 border border-slate-600 p-3 rounded text-sm text-white">
+                    </div>
+                    <button class="bg-yellow-500 text-luxury-900 px-6 py-2 rounded font-bold text-xs uppercase" onclick="showToast('Coupon Created Successfully!')">Generate Offer</button>
+                </div>
+            </div>
+
+            <!-- 10. CMS & WEBSITE MANAGEMENT -->
+            <div id="view-cms" class="tab-content">
+                <h3 class="text-xl font-bold mb-6">Frontend CMS Management</h3>
+                
+                <!-- Quick Overviews -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
+                    <div class="glass-box p-6 text-center border border-gold-500 bg-luxury-800"><i class="fas fa-image text-3xl mb-3 text-gold-500"></i><p class="text-xs font-bold uppercase text-white">Promo Banners</p></div>
+                    <div class="glass-box p-6 text-center cursor-pointer hover:border-gold-500"><i class="fas fa-file-contract text-3xl mb-3 text-slate-500"></i><p class="text-xs font-bold uppercase text-slate-400">Legal Policies</p></div>
+                    <div class="glass-box p-6 text-center cursor-pointer hover:border-gold-500"><i class="fas fa-star text-3xl mb-3 text-slate-500"></i><p class="text-xs font-bold uppercase text-slate-400">Featured</p></div>
+                    <div class="glass-box p-6 text-center cursor-pointer hover:border-gold-500"><i class="fas fa-question-circle text-3xl mb-3 text-slate-500"></i><p class="text-xs font-bold uppercase text-slate-400">FAQs</p></div>
+                </div>
+
+                <!-- ADDED FEATURE: Custom Corporate Banners Module -->
+                <div class="glass-box p-8 rounded-2xl border border-slate-700 mb-8">
+                    <div class="flex justify-between items-center mb-6">
+                        <h4 class="font-bold uppercase text-sm text-gold-400"><i class="fas fa-ad mr-2"></i>Corporate & Custom Banners</h4>
+                        <span class="bg-green-500/20 text-green-400 border border-green-500/30 px-3 py-1 rounded text-[10px] font-bold uppercase">Syncs to Frontend</span>
+                    </div>
+                    
+                    <form onsubmit="addPromoBanner(event)" class="grid md:grid-cols-2 gap-6">
+                        <div class="space-y-4">
+                            <input type="text" id="banner-title" placeholder="Banner Title (e.g., Custom Corporate Gifting)" required class="w-full bg-luxury-900 border border-slate-600 p-3 rounded-lg text-sm text-white outline-none">
+                            <input type="text" id="banner-sub" placeholder="Subtitle / Offer text (e.g., Add your company logo for orders > 50)" class="w-full bg-luxury-900 border border-slate-600 p-3 rounded-lg text-sm text-white outline-none">
+                        </div>
+                        <div class="space-y-4">
+                            <label for="banner-img" class="w-full bg-luxury-900 border-2 border-dashed border-slate-600 p-3 rounded-lg text-slate-400 text-sm flex items-center justify-center cursor-pointer hover:border-gold-500 transition-colors">
+                                <i class="fas fa-cloud-upload-alt mr-2 text-xl"></i> Upload Banner Image
+                            </label>
+                            <input type="file" id="banner-img" accept="image/*" class="hidden" onchange="document.getElementById('b-file-name').innerText = this.files[0].name" required>
+                            <p id="b-file-name" class="text-[10px] text-gold-500 text-center"></p>
+                            <button type="submit" class="w-full bg-gold-500 text-luxury-900 font-bold py-3 rounded-lg uppercase text-xs tracking-widest transition-colors hover:bg-gold-400">Publish to Website</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- List of Active Banners -->
+                <div class="glass-box overflow-hidden">
+                    <table class="w-full text-left text-sm text-slate-300">
+                        <thead class="bg-luxury-900 text-[10px] uppercase font-black text-slate-500 border-b border-slate-700">
+                            <tr><th class="p-4">Banner Preview</th><th class="p-4">Title & Info</th><th class="p-4">Status</th><th class="p-4 text-right">Action</th></tr>
+                        </thead>
+                        <tbody id="banners-table" class="divide-y divide-slate-800">
+                            <!-- Populated via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- PLACEHOLDER FOR REMAINING MODULES -->
+            <div id="view-placeholder" class="tab-content">
+                <div class="flex flex-col items-center justify-center h-[60vh] text-center">
+                    <div class="relative"><i class="fas fa-cog text-6xl text-slate-700 mb-6 animate-spin-slow"></i><i class="fas fa-cog text-3xl text-gold-500 absolute bottom-4 right-0 animate-spin-slow-reverse"></i></div>
+                    <h2 class="text-2xl font-display font-black uppercase tracking-widest text-slate-300">Module Activated</h2>
+                    <p class="text-slate-500 text-sm mt-2 max-w-md">This specific core module structure is built into the system. Data rendering will commence upon live database connection.</p>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- LOGIC SCRIPT -->
+    <script>
+        // 🔥 1. Firebase Configuration 🔥
+        const firebaseConfig = {
+            apiKey: "AIzaSyBBiUnm1X2SohkD5yQtH7B6bf6uz74XNo4",
+            authDomain: "aerozipindustries.firebaseapp.com",
+            projectId: "aerozipindustries",
+            storageBucket: "aerozipindustries.firebasestorage.app",
+            messagingSenderId: "799969348706",
+            appId: "1:799969348706:web:00a61cedd7fbcda2ef153b",
+            measurementId: "G-8K5LHJX94N"
+        };
+
+        // 🔥 2. Initialize Firebase 🔥
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // Original LocalStorage Init (Keeping it as fallback/initial load)
+        let masterDB = JSON.parse(localStorage.getItem('aerozipMasterDB')) || {
+            products: [], orders: [], customers: [], sellers: [], banners: [], stats: { sales: 0, totalOrders: 0, activeCustomers: 0 }
+        };
+
+        // 🔥 3. LIVE SYNC (Firebase Firestore Listener) 🔥
+        db.collection("AerozipCloud").doc("MasterAdminDB").onSnapshot((doc) => {
+            if (doc.exists) {
+                masterDB = doc.data();
+                localStorage.setItem('aerozipMasterDB', JSON.stringify(masterDB)); // Keep local in sync
+                
+                // Refresh UI components automatically when data changes
+                if(typeof refreshDashboard === 'function') refreshDashboard();
+                if(typeof renderProducts === 'function') renderProducts();
+                if(typeof renderOrders === 'function') renderOrders();
+                if(typeof renderBanners === 'function') renderBanners();
+            } else {
+                syncToCloud(); // Create document if it doesn't exist yet
+            }
+        });
+
+        // 🔥 4. Save Data Function (Pushes to Cloud and CREATES FOLDERS) 🔥
+        function syncToCloud() {
+            localStorage.setItem('aerozipMasterDB', JSON.stringify(masterDB)); // Local Backup
+            
+            // Sync to Master JSON document
+            db.collection("AerozipCloud").doc("MasterAdminDB").set(masterDB)
+                .catch((error) => console.error("Firebase Sync Error: ", error));
+
+            // 🔥 NEW: Create beautiful separate folders (Collections) in Firebase Console 🔥
+            if(masterDB.products && masterDB.products.length > 0) {
+                masterDB.products.forEach(p => {
+                    db.collection("Products").doc(p.sku || p.id.toString()).set(p);
+                });
+            }
+            if(masterDB.orders && masterDB.orders.length > 0) {
+                masterDB.orders.forEach(o => {
+                    db.collection("Orders").doc(o.id.toString()).set(o);
+                });
+            }
+            if(masterDB.banners && masterDB.banners.length > 0) {
+                masterDB.banners.forEach(b => {
+                    db.collection("Banners").doc(b.id.toString()).set(b);
+                });
+            }
+            console.log("Folders created in Firebase Console!");
+        }
+
+        // Initialize UI
+        document.addEventListener('DOMContentLoaded', () => {
+            refreshDashboard();
+            renderProducts();
+            renderOrders();
+            renderBanners();
+        });
+
+        // Navigation Logic
+        function openTab(tabId, btn) {
+            // Update Title
+            document.getElementById('page-title').innerText = btn.innerText.trim();
+            // Highlight Button
+            document.querySelectorAll('.nav-btn').forEach(b => {
+                b.classList.remove('bg-luxury-800', 'text-white');
+                b.classList.add('text-slate-400');
+            });
+            btn.classList.remove('text-slate-400');
+            btn.classList.add('bg-luxury-800', 'text-white');
+
+            // Switch Content
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            
+            const target = document.getElementById('view-' + tabId);
+            if(target) { target.classList.add('active'); } 
+            else { document.getElementById('view-placeholder').classList.add('active'); }
+        }
+
+        // --- Products Module Logic ---
+        function toggleElement(id) {
+            const el = document.getElementById(id);
+            el.classList.toggle('hidden');
+        }
+
+        function addProduct(e) {
+            e.preventDefault();
+            const name = document.getElementById('p-name').value;
+            const price = document.getElementById('p-price').value;
+            const stock = document.getElementById('p-stock').value;
+            const sku = document.getElementById('p-sku').value;
+            const file = document.getElementById('p-img').files[0];
+
+            if(!name || !price || !file) return showToast("Fill required fields & add image!");
+
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                masterDB.products.unshift({
+                    id: Date.now(), sku: sku, name: name, price: parseInt(price), stock: parseInt(stock), status: 'Active', image: ev.target.result
+                });
+                
+                // Save locally and sync to Firebase cloud
+                localStorage.setItem('aerozipMasterDB', JSON.stringify(masterDB));
+                syncToCloud(); 
+
+                renderProducts();
+                document.getElementById('add-product-form').reset();
+                toggleElement('add-product-form');
+                showToast("Product Added Successfully!");
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function renderProducts() {
+            const tbody = document.getElementById('inventory-table');
+            if(!tbody) return;
+            if(masterDB.products.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="p-8 text-center text-slate-500 font-bold uppercase text-xs">No Products Listed Yet.</td></tr>';
+                return;
+            }
+            tbody.innerHTML = masterDB.products.map(p => `
+                <tr class="hover:bg-luxury-800/50 transition-colors">
+                    <td class="p-4 flex items-center gap-3"><img src="${p.image}" class="w-12 h-12 rounded bg-white object-contain p-1"><span class="text-[10px] font-bold text-slate-400">SKU: ${p.sku}</span></td>
+                    <td class="p-4 font-bold text-white">${p.name}</td>
+                    <td class="p-4 text-gold-400 font-bold">₹${p.price.toLocaleString('en-IN')}</td>
+                    <td class="p-4"><span class="bg-luxury-950 px-2 py-1 rounded text-xs font-black ${p.stock < 5 ? 'text-red-500' : 'text-slate-300'}">${p.stock}</span></td>
+                    <td class="p-4"><span class="text-[10px] uppercase font-black tracking-widest text-green-400 border border-green-500/30 px-2 py-1 rounded-full bg-green-500/10"><i class="fas fa-circle text-[8px] mr-1"></i> ${p.status}</span></td>
+                    <td class="p-4 text-right">
+                        <button class="text-blue-400 hover:text-white mr-3"><i class="fas fa-edit"></i></button>
+                        <button onclick="deleteProduct(${p.id})" class="text-red-400 hover:text-red-500"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function deleteProduct(id) {
+            if(confirm("Delete this product permanently?")) {
+                masterDB.products = masterDB.products.filter(p => p.id !== id);
+                
+                // Save locally and sync to Firebase cloud
+                localStorage.setItem('aerozipMasterDB', JSON.stringify(masterDB));
+                syncToCloud(); 
+
+                renderProducts();
+                showToast("Product Deleted!");
+            }
+        }
+
+        // --- CMS BANNERS MODULE LOGIC ---
+        function addPromoBanner(e) {
+            e.preventDefault();
+            const title = document.getElementById('banner-title').value;
+            const sub = document.getElementById('banner-sub').value;
+            const file = document.getElementById('banner-img').files[0];
+            
+            if(!masterDB.banners) masterDB.banners = [];
+
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                masterDB.banners.unshift({
+                    id: Date.now(), title: title, subtitle: sub, image: ev.target.result, status: 'Live on Website'
+                });
+                
+                // Save locally and sync to Firebase cloud
+                localStorage.setItem('aerozipMasterDB', JSON.stringify(masterDB));
+                syncToCloud(); 
+
+                renderBanners();
+                
+                // Clear Form
+                document.getElementById('banner-title').value = '';
+                document.getElementById('banner-sub').value = '';
+                document.getElementById('b-file-name').innerText = '';
+                document.getElementById('banner-img').value = '';
+                
+                showToast("Banner Published to Website!");
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function renderBanners() {
+            if(!masterDB.banners) masterDB.banners = [];
+            const tbody = document.getElementById('banners-table');
+            if(masterDB.banners.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" class="p-8 text-center text-slate-500 font-bold uppercase text-xs">No active banners.</td></tr>';
+                return;
+            }
+            tbody.innerHTML = masterDB.banners.map(b => `
+                <tr class="hover:bg-luxury-800/50">
+                    <td class="p-4"><img src="${b.image}" class="w-24 h-12 object-cover rounded border border-slate-600"></td>
+                    <td class="p-4"><p class="font-bold text-white">${b.title}</p><p class="text-[10px] text-slate-400">${b.subtitle}</p></td>
+                    <td class="p-4"><span class="bg-green-500/10 text-green-400 border border-green-500/20 px-2 py-1 rounded text-[10px] font-bold uppercase">${b.status}</span></td>
+                    <td class="p-4 text-right"><button onclick="deleteBanner(${b.id})" class="text-red-400 hover:text-red-500"><i class="fas fa-trash"></i></button></td>
+                </tr>
+            `).join('');
+        }
+
+        function deleteBanner(id) {
+            if(confirm("Remove this banner from the website?")) {
+                masterDB.banners = masterDB.banners.filter(b => b.id !== id);
+                
+                // Save locally and sync to Firebase cloud
+                localStorage.setItem('aerozipMasterDB', JSON.stringify(masterDB));
+                syncToCloud(); 
+
+                renderBanners();
+                showToast("Banner Removed!");
+            }
+        }
+
+        // --- Orders Module Demo Logic ---
+        function renderOrders() {
+            const tbody = document.getElementById('orders-table');
+            const recent = document.getElementById('recent-orders-list');
+            if(masterDB.orders.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="p-8 text-center text-slate-500 font-bold uppercase text-xs">Awaiting First Live Order.<br><button onclick="simulateOrder()" class="mt-4 bg-gold-500 text-luxury-900 px-4 py-2 rounded">Simulate Fake Order</button></td></tr>';
+                recent.innerHTML = '<tr><td class="p-4 text-xs text-slate-500 text-center">No orders today</td></tr>';
+                return;
+            }
+            
+            let html = masterDB.orders.map(o => `
+                <tr class="hover:bg-luxury-800/50">
+                    <td class="p-4"><span class="font-black text-white">${o.id}</span><br><span class="text-[10px] text-slate-500">${o.date}</span></td>
+                    <td class="p-4 text-xs font-bold text-slate-300">${o.customer}</td>
+                    <td class="p-4 text-gold-400 font-black">₹${o.total.toLocaleString('en-IN')}</td>
+                    <td class="p-4 text-xs text-slate-400">${o.payment}</td>
+                    <td class="p-4"><span class="text-[10px] uppercase font-bold text-yellow-500 bg-yellow-500/10 px-2 py-1 rounded border border-yellow-500/20">${o.status}</span></td>
+                    <td class="p-4 text-right">
+                        <select class="bg-luxury-950 border border-slate-700 text-[10px] p-1.5 rounded text-white outline-none" onchange="showToast('Status Updated to ' + this.value)">
+                            <option>Processing</option><option>Packed</option><option>Shipped</option><option>Delivered</option>
+                        </select>
+                    </td>
+                </tr>
+            `).join('');
+            tbody.innerHTML = html;
+            recent.innerHTML = html;
+        }
+
+        function simulateOrder() {
+            masterDB.orders.unshift({
+                id: 'ORD-' + Math.floor(Math.random()*90000), date: new Date().toLocaleString(), customer: 'Pranavi Corp B2B', total: 45000, payment: 'NEFT Transfer', status: 'Processing'
+            });
+            masterDB.stats.sales += 45000;
+            masterDB.stats.totalOrders += 1;
+            masterDB.stats.activeCustomers += 1;
+            
+            // Save locally and sync to Firebase cloud
+            localStorage.setItem('aerozipMasterDB', JSON.stringify(masterDB));
+            syncToCloud(); 
+
+            renderOrders(); refreshDashboard(); showToast("New B2B Order Received!");
+        }
+
+        // --- Dashboard Sync ---
+        function refreshDashboard() {
+            document.getElementById('db-sales').innerText = `₹${masterDB.stats.sales.toLocaleString('en-IN')}`;
+            document.getElementById('db-orders').innerText = masterDB.stats.totalOrders;
+            document.getElementById('db-customers').innerText = masterDB.stats.activeCustomers;
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            document.getElementById('toast-msg').innerText = msg;
+            t.style.transform = 'translateX(0)';
+            setTimeout(() => { t.style.transform = 'translateX(150%)'; }, 3000);
+        }
+    </script>
+</body>
+</html>
